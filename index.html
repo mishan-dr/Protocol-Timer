@@ -13,32 +13,39 @@
 
     <style>
         :root {
-            --bg-color: #f7f9fc; 
+            --bg-color: #f0f3f8; 
             --card-bg: #ffffff;
-            --primary: #007bff; /* Focus Blue */
-            --accent: #ff7043; /* Action Orange */
+            --primary: #0069d9; /* Deep Focus Blue */
+            --accent: #d9534f; /* Alert Red */
             --water: #00bcd4; /* Hydration Cyan */
-            --text: #333333;
-            --dim: #6c757d;
-            --border: #f0f0f0;
+            --text: #1c2a38;
+            --dim: #5c6c7c;
+            --border: #e3e8ee;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             --font-main: 'Roboto', sans-serif;
         }
 
         /* --- DARK MODE VARIABLES --- */
         body.dark-mode {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --primary: #4da3ff;
-            --accent: #ff8a65;
-            --water: #26c6da;
+            --bg-color: #1a1a1a;
+            --card-bg: #282828;
+            --primary: #66b3ff;
+            --accent: #ff8a80;
+            --water: #4dd0e1;
             --text: #e0e0e0;
-            --dim: #a0a0a0;
-            --border: #333333;
+            --dim: #999999;
+            --border: #444444;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
 
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
 
-        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s, color 0.3s; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s; 
+        }
         
         body {
             background-color: var(--bg-color);
@@ -49,108 +56,163 @@
             flex-direction: column;
         }
 
-        /* --- Dark Mode Toggle --- */
+        /* --- Global Elements --- */
         .theme-toggle {
-            position: fixed; top: 20px; right: 20px;
+            position: fixed; top: 15px; right: 15px;
             background: var(--card-bg); border: 1px solid var(--border);
-            color: var(--text); padding: 10px 15px; border-radius: 50px;
-            cursor: pointer; z-index: 1100; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            font-weight: bold; display: flex; align-items: center; gap: 5px;
+            color: var(--text); padding: 8px 12px; border-radius: 20px;
+            cursor: pointer; z-index: 1100; box-shadow: var(--shadow);
+            font-size: 0.85rem; font-weight: 500;
         }
-        .theme-toggle:hover { transform: scale(1.05); }
-
-        /* --- Overlay --- */
         #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-color); display: flex; justify-content: center; align-items: center;
             flex-direction: column; z-index: 1000; cursor: pointer;
         }
-        #overlay h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 30px; }
+        #overlay h1 { font-size: 2.2rem; color: var(--primary); margin-bottom: 20px; }
         #overlay button {
-            padding: 15px 40px; font-size: 1.2rem; font-weight: 700;
+            padding: 12px 30px; font-size: 1.1rem; font-weight: 700;
             color: white; background-color: var(--accent); border: none;
-            border-radius: 50px; cursor: pointer; transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(255, 112, 67, 0.4);
+            border-radius: 50px; cursor: pointer; box-shadow: 0 4px 10px rgba(217, 83, 79, 0.4);
         }
 
         /* --- Layout --- */
         .container {
-            display: flex; max-width: 1200px; margin: 20px auto; width: 95%; gap: 20px;
+            display: flex; max-width: 1280px; margin: 25px auto; width: 95%; gap: 25px;
         }
-        .left-panel { flex: 3; display: flex; flex-direction: column; gap: 20px; }
-        .right-panel { flex: 2; display: flex; flex-direction: column; gap: 20px; }
+        .left-panel { flex: 3; display: flex; flex-direction: column; gap: 25px; }
+        .right-panel { flex: 2; display: flex; flex-direction: column; gap: 25px; }
 
-        /* --- Dashboard Head --- */
+        /* --- Dashboard Head (Main Component) --- */
         .dashboard-head {
-            background-color: var(--card-bg); padding: 30px;
-            border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            text-align: center; position: relative;
+            background-color: var(--card-bg); padding: 20px 30px;
+            border-radius: 12px; box-shadow: var(--shadow);
+            text-align: center; border-top: 5px solid var(--primary);
         }
-        .protocol-title { font-size: 1.4rem; font-weight: 900; color: var(--primary); letter-spacing: 1px; margin-bottom: 5px; }
-        .current-task-main { font-size: 2.5rem; font-weight: 900; color: var(--text); margin: 10px 0; text-transform: uppercase; }
-        .countdown { font-size: 6rem; font-weight: 100; color: var(--accent); line-height: 1; }
+        .protocol-title { 
+            font-size: 1rem; font-weight: 700; color: var(--primary); 
+            letter-spacing: 1px; margin-bottom: 10px; text-transform: uppercase;
+        }
+        .countdown { font-size: 4.5rem; font-weight: 100; color: var(--accent); line-height: 1; }
+        .current-task-main { font-size: 1.8rem; font-weight: 900; color: var(--text); margin: 8px 0 15px; text-transform: uppercase; line-height: 1.2; }
         
-        .sub-task-timer { margin-top: 15px; padding: 10px; background-color: var(--bg-color); border-radius: 8px; font-size: 1.2rem; font-weight: 700; color: var(--primary); }
-
-        /* --- Mini Water HUD --- */
-        .mini-water-hud {
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(0, 188, 212, 0.1);
-            border: 1px solid var(--water);
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            align-items: center;
+        .sub-task-timer { 
+            padding: 10px; background-color: var(--bg-color); border-radius: 8px; 
+            font-size: 1rem; font-weight: 500; color: var(--dim); margin-bottom: 15px;
         }
-        .hud-row { display: flex; justify-content: space-between; width: 100%; max-width: 400px; font-size: 0.95rem; font-weight: 600; color: var(--text); }
-        .water-val { color: var(--water); font-weight: 900; font-size: 1.1rem; }
-        .progress-bar-bg { width: 100%; height: 8px; background-color: rgba(0,0,0,0.1); border-radius: 4px; margin-top: 5px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; background-color: var(--water); width: 0%; transition: width 0.5s ease; }
-        .next-sip-alert { font-size: 0.85rem; color: var(--dim); margin-top: 5px; font-style: italic; }
+        .sub-task-timer span:first-child { color: var(--primary); font-weight: 700; margin-right: 5px; }
 
-        /* --- Widgets --- */
-        .widgets-row { display: flex; gap: 20px; }
-        .widget-box { background-color: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); flex: 1; }
-        .widget-box h3 { color: var(--primary); font-size: 1rem; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 5px;}
+        /* --- Unified Status/Counter Bar (NEW) --- */
+        .status-bar-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px;
+            padding: 15px 0;
+            border-top: 1px solid var(--border);
+        }
+        
+        /* Water HUD styling */
+        .mini-water-hud {
+            text-align: left;
+            padding-right: 15px;
+            border-right: 1px solid var(--border);
+        }
+        .hud-row { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 500; color: var(--dim); margin-bottom: 5px; }
+        .water-val { color: var(--water); font-weight: 700; font-size: 1rem; }
+        .progress-bar-bg { width: 100%; height: 6px; background-color: var(--bg-color); border-radius: 3px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background-color: var(--water); width: 0%; transition: width 0.5s ease; }
+        .next-sip-alert { font-size: 0.75rem; color: var(--dim); margin-top: 5px; font-style: italic; }
+
+        /* NEET Counter styling (Integrated) */
+        .neet-counter-integrated {
+            text-align: center;
+        }
+        .neet-counter-integrated h4 { font-size: 0.9rem; color: var(--primary); margin-bottom: 10px; font-weight: 700;}
+        .counter-grid-mini { display: flex; justify-content: center; gap: 20px; }
+        .counter-value { font-size: 1.8rem; font-weight: 900; color: var(--accent); line-height: 1; }
+        .counter-label { font-size: 0.7rem; color: var(--dim); text-transform: uppercase; margin-top: 3px; }
+
+        /* --- Side Widgets (Water & Calendar) --- */
+        .widgets-row { display: flex; gap: 25px; }
+        .widget-box { 
+            background-color: var(--card-bg); padding: 15px; border-radius: 8px; 
+            box-shadow: var(--shadow); flex: 1; border: 1px solid var(--border);
+        }
+        .widget-box h3 { 
+            color: var(--primary); font-size: 0.9rem; margin-bottom: 10px; 
+            text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 5px;
+            font-weight: 700;
+        }
 
         /* Water List */
         .water-list { list-style: none; font-size: 0.85rem; max-height: 200px; overflow-y: auto; }
-        .water-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); color: var(--text); }
+        .water-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dotted var(--border); color: var(--text); }
+        .water-item:last-child { border-bottom: none; }
+        .water-item span:last-child { color: var(--water); font-weight: 700; }
         .water-item.done { text-decoration: line-through; opacity: 0.5; }
 
-        /* --- NEW CALENDAR STYLES --- */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 0.85rem; }
-        .cal-day-header { font-weight: bold; color: var(--dim); font-size: 0.7rem; }
-        .cal-day { padding: 5px; border-radius: 4px; color: var(--text); }
-        .cal-day.today { background-color: var(--accent); color: white; font-weight: bold; }
-        
-        /* New Header for Arrows */
-        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: var(--primary); font-weight: bold; font-size: 0.9rem; }
-        .cal-btn { background: none; border: none; cursor: pointer; color: var(--accent); font-weight: bold; font-size: 1.2rem; padding: 0 10px; transition: transform 0.2s; }
-        .cal-btn:hover { transform: scale(1.2); color: var(--primary); }
+        /* Calendar */
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: var(--text); font-weight: 600; font-size: 0.95rem; }
+        .cal-btn { background: none; border: none; cursor: pointer; color: var(--accent); font-weight: bold; font-size: 1.1rem; padding: 0 5px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 0.8rem; }
+        .cal-day-header { font-weight: 700; color: var(--dim); font-size: 0.7rem; }
+        .cal-day { padding: 4px; border-radius: 4px; color: var(--text); }
+        .cal-day.today { background-color: var(--accent); color: white; font-weight: 700; }
 
-        /* Counters */
-        .counter-widget { background: linear-gradient(135deg, rgba(0, 123, 255, 0.1), rgba(0, 123, 255, 0.2)); padding: 20px; border-radius: 12px; text-align: center; border: 1px solid var(--primary); }
-        .counter-grid { display: flex; justify-content: space-around; }
-        .counter-value { font-size: 2rem; font-weight: 900; color: var(--accent); }
-        .counter-label { font-size: 0.7rem; color: var(--dim); text-transform: uppercase; }
-        
-        /* Music & Schedule */
-        .music-player { background-color: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); }
-        .schedule-box { background-color: var(--card-bg); padding: 20px 0 0 0; border-radius: 12px; flex: 1; min-height: 300px; display: flex; flex-direction: column; }
-        .schedule-list { padding: 0 20px; overflow-y: auto; flex: 1; max-height: 60vh; }
-        .schedule-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); color: var(--dim); }
-        .schedule-item.active { background-color: rgba(0, 123, 255, 0.05); color: var(--primary); font-weight: 700; border-radius: 4px; padding: 12px 5px; margin: 0 -5px; }
-        .time-col { font-weight: 600; min-width: 90px; font-size: 0.9rem;}
-        .task-col { flex: 1; text-align: left; text-transform: uppercase; margin-left: 10px; font-size: 0.9rem;}
-        .footer { padding: 15px; text-align: center; font-size: 0.9rem; color: var(--dim); margin-top: 20px; }
+        /* Motivation Box */
+        .motivation-box {
+            padding: 15px; border-radius: 8px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border);
+            border-left: 5px solid var(--accent);
+        }
+        .motivation-box blockquote { font-style: italic; font-size: 0.95rem; font-weight: 400; color: var(--text); line-height: 1.4; }
+
+        /* --- Right Panel Widgets --- */
+        .music-player { background-color: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .music-player h3 { color: var(--primary); margin-bottom: 10px; font-size: 1rem; }
+        .file-label { 
+            display: block; background-color: var(--primary); color: white; 
+            padding: 8px 12px; border-radius: 6px; cursor: pointer; text-align: center; 
+            font-weight: 500; font-size: 0.9rem; transition: background-color 0.2s;
+        }
+        audio { width: 100%; margin-top: 10px; }
+        #trackName { font-size: 0.8rem; color: var(--dim); margin-top: 5px; text-align: center; }
+
+        /* Schedule List */
+        .schedule-box { 
+            background-color: var(--card-bg); padding: 15px 0 0 0; border-radius: 8px; 
+            box-shadow: var(--shadow); flex: 1; min-height: 300px; display: flex; 
+            flex-direction: column; border: 1px solid var(--border);
+        }
+        .schedule-box h3 { 
+            color: var(--text); font-size: 1rem; margin: 0 15px 10px; 
+            border-bottom: 1px solid var(--border); padding-bottom: 10px; font-weight: 700;
+        }
+        .schedule-list { padding: 0 15px; overflow-y: auto; flex: 1; max-height: 60vh; }
+        .schedule-item { 
+            display: flex; justify-content: space-between; padding: 10px 0; 
+            border-bottom: 1px dotted var(--border); color: var(--dim); font-size: 0.85rem;
+        }
+        .schedule-item.active { 
+            background-color: rgba(0, 105, 217, 0.08); 
+            color: var(--primary); font-weight: 600; border-radius: 4px; 
+            padding: 10px 5px; margin: 0 -5px; 
+        }
+        .time-col { font-weight: 700; min-width: 80px; }
+        .task-col { flex: 1; text-align: left; text-transform: uppercase; margin-left: 10px; }
+        .schedule-item.completed { opacity: 0.4; }
+
+        .footer { padding: 10px; text-align: center; font-size: 0.8rem; color: var(--dim); border-top: 1px solid var(--border); margin-top: 20px; }
 
         @media (max-width: 900px) {
-            .container { flex-direction: column; }
-            .widgets-row { flex-direction: column; }
-            .countdown { font-size: 4rem; }
+            .container { flex-direction: column; margin: 15px auto; }
+            .widgets-row { flex-direction: column; gap: 15px; }
+            .dashboard-head { padding: 20px; }
+            .countdown { font-size: 3.5rem; }
+            .current-task-main { font-size: 1.4rem; }
+            .status-bar-grid { grid-template-columns: 1fr; }
+            .mini-water-hud { border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px; }
+            .theme-toggle { top: 10px; right: 10px; }
         }
     </style>
 </head>
@@ -162,7 +224,7 @@
     <div id="overlay">
         <h1>🦁 ASCENSION PROTOCOL</h1>
         <button onclick="startProtocol()">INITIATE PROTOCOL</button>
-        <p style="margin-top:20px; color:#999; font-size:0.9rem;">v2.2 // Calendar Navigation Enabled</p>
+        <p style="margin-top:20px; color:#999; font-size:0.9rem;">v3.0 // Professional UI Refined</p>
     </div>
 
     <div class="container">
@@ -176,41 +238,43 @@
                     <span>Task Detail:</span> <span id="subTaskName">Awaiting Cycle Start</span>
                 </div>
 
-                <div class="mini-water-hud">
-                    <div class="hud-row">
-                        <span>💧 Intake So Far:</span>
-                        <span class="water-val" id="hudConsumed">0 ml</span>
+                <div class="status-bar-grid">
+                    <div class="mini-water-hud">
+                        <div class="hud-row">
+                            <span>💧 Intake So Far:</span>
+                            <span class="water-val" id="hudConsumed">0 ml</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="hudBar"></div>
+                        </div>
+                        <div class="hud-row" style="margin-top:5px; font-size:0.75rem; color:var(--dim);">
+                            <span>Target: 3700ml</span>
+                            <span id="hudPercent">0%</span>
+                        </div>
+                        <div class="next-sip-alert" id="hudNext">Next: Loading...</div>
                     </div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" id="hudBar"></div>
-                    </div>
-                    <div class="hud-row" style="margin-top:5px; font-size:0.8rem; color:var(--dim);">
-                        <span>Target: 3500ml</span>
-                        <span id="hudPercent">0%</span>
-                    </div>
-                    <div class="next-sip-alert" id="hudNext">Next: Loading...</div>
-                </div>
-            </div>
 
-            <div class="counter-widget">
-                <div class="counter-grid">
-                    <div class="counter-item">
-                        <div class="counter-value" id="daysCount">000</div>
-                        <div class="counter-label">Days Left</div>
-                    </div>
-                    <div class="counter-item">
-                        <div class="counter-value" id="hoursCount">00</div>
-                        <div class="counter-label">Hours</div>
+                    <div class="neet-counter-integrated">
+                        <h4>NEET TARGET LOCK</h4>
+                        <div class="counter-grid-mini">
+                            <div class="counter-item">
+                                <div class="counter-value" id="daysCount">000</div>
+                                <div class="counter-label">Days Left</div>
+                            </div>
+                            <div class="counter-item">
+                                <div class="counter-value" id="hoursCount">00</div>
+                                <div class="counter-label">Hours</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div style="margin-top:10px; font-weight:bold; color:var(--primary);">NEET TARGET LOCK</div>
             </div>
 
             <div class="widgets-row">
                 <div class="widget-box">
                     <h3>🚰 Hydration Schedule</h3>
                     <ul class="water-list" id="fullWaterList">
-                    </ul>
+                        </ul>
                 </div>
 
                 <div class="widget-box">
@@ -219,8 +283,8 @@
                 </div>
             </div>
             
-            <div class="motivation-box" style="background:var(--card-bg); padding:15px; border-radius:12px; border-left:4px solid var(--accent);">
-                <blockquote id="motivationQuote" style="font-style:italic; color:var(--text);">"Loading quote..."</blockquote>
+            <div class="motivation-box">
+                <blockquote id="motivationQuote">"Loading quote..."</blockquote>
             </div>
 
         </div>
@@ -228,14 +292,14 @@
         <div class="right-panel">
             <div class="music-player">
                 <h3>🎧 Audio Focus</h3>
-                <label for="fileInput" class="file-label" style="display:block; background:var(--primary); color:white; text-align:center; padding:10px; border-radius:6px; margin-bottom:10px; cursor:pointer;">Load Tracks</label>
-                <input type="file" id="fileInput" multiple accept="audio/*" style="display:none;">
-                <audio id="musicPlayer" controls loop style="width:100%;"></audio>
-                <div id="trackName" style="text-align:center; font-size:0.8rem; margin-top:5px; color:var(--dim);">No track loaded.</div>
+                <label for="fileInput" class="file-label">Load Tracks</label>
+                <input type="file" id="fileInput" multiple accept="audio/*">
+                <audio id="musicPlayer" controls loop></audio>
+                <div id="trackName">No track loaded.</div>
             </div>
 
             <div class="schedule-box">
-                <h3 style="margin:0 20px 10px; border-bottom:1px solid var(--border); padding-bottom:10px; color:var(--text);">Timetable</h3>
+                <h3>Timetable</h3>
                 <div class="schedule-list" id="scheduleList">
                 </div>
             </div>
@@ -288,15 +352,14 @@
         ];
         
         const NEET_TARGET_DATE = new Date('May 4, 2026 14:00:00'); 
-        const quotes = ["Distraction is death.", "Identity is focus.", "While they sleep, you grind.", "Physics is logic. Biology is reflex.", "Don't negotiate with yourself."];
+        const quotes = ["Every distraction is a sniper bullet to your rank. Stay locked.", "Identity hardens when focus becomes default. You are ascending.", "While the world sleeps, you sharpen your edge. Dominate this cycle.", "Physics will start clicking. Biology will become reflex. Trust the process.", "Your past will scratch you. Your future will pull you. Keep moving.", "The brain never overfills. This is execution mode, not timepass studying.", "Your confidence will harden. Panic will reduce. Vision will sharpen.", "Success is the sum of small efforts, repeated day in and day out.", "My day is locked. My destiny is loading. Let's execute."];
+        const TOTAL_WATER_ML = waterPlan.reduce((sum, item) => sum + item.ml, 0); // Should be 3700
 
         // --- 2. GLOBAL VARIABLES ---
         let protocolStarted = false;
         let lastSeconds = -1;
         let lastCycleIndex = -1;
         let lastSubTaskIndex = -1;
-        
-        // Calendar view state
         let calendarViewDate = new Date(); 
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -323,6 +386,7 @@
             }
             renderCalendar();
             renderWaterList();
+            document.getElementById('motivationQuote').innerText = quotes[Math.floor(Math.random()*quotes.length)];
         });
 
         // --- 4. WATER HUD LOGIC ---
@@ -335,9 +399,21 @@
 
             waterPlan.forEach((entry, index) => {
                 const entryTime = getTodayDate(entry.time);
-                if (entry.time === "00:00" && now.getHours() > 12) {
-                     entryTime.setDate(entryTime.getDate() + 1);
+                // Handle midnight crossover for last entry
+                if (entry.time === "00:00") {
+                     // If it's 00:00 (midnight), it refers to the start of the next day's 00:00.
+                     // But if current time is after noon, we want to treat it as today's 00:00 (i.e., yesterday's end).
+                     // A safer way is to check the hour. If the entry time is less than 8 AM (start of day), assume it's the next day.
+                     // For 00:00, if now is > 8 PM, assume next day. If now is < 8 AM, assume today.
+                     // Simplest: Check if entry time is logically *before* the current time today.
+                     if (now.getHours() < 8 && entryTime.getHours() > 0) {
+                         // Pass
+                     } else if (now.getHours() >= 8 && entryTime.getHours() < 8) {
+                        entryTime.setDate(entryTime.getDate() + 1);
+                     }
                 }
+                
+                // Final Check
                 if (now >= entryTime) {
                     consumed += entry.ml;
                     if(items[index]) items[index].classList.add('done');
@@ -345,36 +421,40 @@
                     if (!nextSip) nextSip = entry;
                 }
             });
+            
+            // Re-render water list for status updates
+            waterListEl.innerHTML = waterPlan.map((p, index) => {
+                const isDone = consumed >= waterPlan.slice(0, index + 1).reduce((s, i) => s + i.ml, 0);
+                return `<li class="water-item ${isDone ? 'done' : ''}"><span>${p.time} ${p.note}</span> <span>${p.ml}ml</span></li>`;
+            }).join('');
+
 
             document.getElementById('hudConsumed').innerText = consumed + " ml";
-            const percent = Math.min(100, Math.floor((consumed / 3700) * 100));
+            const percent = Math.min(100, Math.floor((consumed / TOTAL_WATER_ML) * 100));
             document.getElementById('hudPercent').innerText = percent + "%";
             document.getElementById('hudBar').style.width = percent + "%";
             
             if (nextSip) {
                 document.getElementById('hudNext').innerText = `Next: ${nextSip.ml}ml @ ${nextSip.time} (${nextSip.note})`;
             } else {
-                document.getElementById('hudNext').innerText = "Hydration Goal Complete.";
+                document.getElementById('hudNext').innerText = "GOAL COMPLETE. Maintenance Phase.";
             }
         }
 
         function renderWaterList() {
             const list = document.getElementById('fullWaterList');
-            let html = '';
-            waterPlan.forEach(p => {
-                html += `<li class="water-item"><span>${p.time} ${p.note}</span> <span>${p.ml}ml</span></li>`;
-            });
-            list.innerHTML = html;
+            list.innerHTML = waterPlan.map(p => 
+                `<li class="water-item"><span>${p.time} ${p.note}</span> <span>${p.ml}ml</span></li>`
+            ).join('');
         }
 
-        // --- 5. CALENDAR LOGIC (UPDATED WITH NAVIGATION) ---
+        // --- 5. CALENDAR LOGIC ---
         function renderCalendar() {
             const calContainer = document.getElementById('miniCalendar');
             
             const viewYear = calendarViewDate.getFullYear();
             const viewMonth = calendarViewDate.getMonth();
             
-            // Real date for highlighting 'today'
             const realNow = new Date();
             const realDay = realNow.getDate();
             const realMonth = realNow.getMonth();
@@ -396,13 +476,10 @@
             
             ['S','M','T','W','T','F','S'].forEach(d => html += `<div class="cal-day-header">${d}</div>`);
             
-            // Empty slots
             for(let i=0; i<firstDay; i++) html += `<div></div>`;
             
-            // Days
             for(let i=1; i<=daysInMonth; i++) {
                 let classes = "cal-day";
-                // Only highlight if view matches real date
                 if (i === realDay && viewMonth === realMonth && viewYear === realYear) {
                     classes += " today";
                 }
@@ -413,7 +490,6 @@
         }
 
         function changeMonth(offset) {
-            // Update view date by offset
             calendarViewDate.setMonth(calendarViewDate.getMonth() + offset);
             renderCalendar();
         }
@@ -441,7 +517,11 @@
             const createItem = (item, idx, status) => {
                 const div = document.createElement('div');
                 div.className = `schedule-item ${status}`;
-                div.innerHTML = `<div class="time-col">${item.start}-${item.end}</div><div class="task-col">${item.task}</div>`;
+                let taskDetails = item.task;
+                if (item.type === 'work' && item.breakdown.length > 0) {
+                     taskDetails += ' (' + item.breakdown.map(b => b.split(' ')[0] + ' ' + b.split(' ')[1]).join('/') + ')';
+                }
+                div.innerHTML = `<div class="time-col">${item.start}-${item.end}</div><div class="task-col">${taskDetails}</div>`;
                 return div;
             };
 
@@ -487,6 +567,8 @@
             for (let i = 0; i < schedule.length; i++) {
                 let start = getTodayDate(schedule[i].start);
                 let end = getTodayDate(schedule[i].end);
+                
+                // Handle midnight crossover logic
                 if (end < start) {
                     if (now >= start) end.setDate(end.getDate() + 1);
                     else if (now < end) start.setDate(start.getDate() - 1);
@@ -531,7 +613,11 @@
 
         function updateNeetCounter() {
             const diff = NEET_TARGET_DATE - new Date();
-            if(diff<0) return;
+            if(diff<0) {
+                document.getElementById('daysCount').innerText = '000';
+                document.getElementById('hoursCount').innerText = '00';
+                return;
+            }
             document.getElementById('daysCount').innerText = String(Math.floor(diff / (1000*60*60*24))).padStart(3,'0');
             document.getElementById('hoursCount').innerText = String(Math.floor((diff % (1000*60*60*24))/(1000*60*60))).padStart(2,'0');
         }
