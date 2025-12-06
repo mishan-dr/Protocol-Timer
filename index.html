@@ -56,14 +56,30 @@
             flex-direction: column;
         }
 
-        /* --- Global Elements --- */
+        /* --- Theme Toggle Button (REVISED) --- */
         .theme-toggle {
             position: fixed; top: 15px; right: 15px;
-            background: var(--card-bg); border: 1px solid var(--border);
-            color: var(--text); padding: 8px 12px; border-radius: 20px;
+            background: var(--card-bg); 
+            border: 1px solid var(--border);
+            color: var(--primary); 
+            padding: 10px; /* Small, equal padding */
+            border-radius: 50%; /* Make it circular */
+            width: 40px; 
+            height: 40px;
+            display: flex; /* Center the icon */
+            justify-content: center;
+            align-items: center;
             cursor: pointer; z-index: 1100; box-shadow: var(--shadow);
-            font-size: 0.85rem; font-weight: 500;
+            font-size: 1.2rem; /* Larger icon size */
+            font-weight: 700;
+            line-height: 1;
+            transition: all 0.2s;
         }
+        .theme-toggle:hover {
+            background-color: var(--bg-color);
+        }
+
+        /* --- Overlay (Initial State) --- */
         #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-color); display: flex; justify-content: center; align-items: center;
@@ -81,7 +97,7 @@
             display: flex; max-width: 1280px; margin: 25px auto; width: 95%; gap: 25px;
         }
         .left-panel { flex: 3; display: flex; flex-direction: column; gap: 25px; }
-        .right-panel { flex: 2; display: flex; flex-direction: column; gap: 25px; }
+        .right-panel { flex: 2; display: flex; flex-direction: column; gap: 25px; } /* Column order dictates Timetable then Music Player */
 
         /* --- Dashboard Head (Main Component) --- */
         .dashboard-head {
@@ -102,7 +118,7 @@
         }
         .sub-task-timer span:first-child { color: var(--primary); font-weight: 700; margin-right: 5px; }
 
-        /* --- Unified Status/Counter Bar (NEW) --- */
+        /* --- Unified Status/Counter Bar --- */
         .status-bar-grid {
             display: grid;
             grid-template-columns: 1fr 1fr; 
@@ -219,12 +235,12 @@
 <body>
 
     <audio id="alarmSound" preload="auto"></audio>
-    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Dark Mode</button>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle Theme">🌙</button>
 
     <div id="overlay">
         <h1>🦁 ASCENSION PROTOCOL</h1>
         <button onclick="startProtocol()">INITIATE PROTOCOL</button>
-        <p style="margin-top:20px; color:#999; font-size:0.9rem;">v3.0 // Professional UI Refined</p>
+        <p style="margin-top:20px; color:#999; font-size:0.9rem;">v3.1 // UI Position Update</p>
     </div>
 
     <div class="container">
@@ -290,18 +306,18 @@
         </div>
 
         <div class="right-panel">
+            <div class="schedule-box">
+                <h3>Timetable</h3>
+                <div class="schedule-list" id="scheduleList">
+                </div>
+            </div>
+
             <div class="music-player">
                 <h3>🎧 Audio Focus</h3>
                 <label for="fileInput" class="file-label">Load Tracks</label>
                 <input type="file" id="fileInput" multiple accept="audio/*">
                 <audio id="musicPlayer" controls loop></audio>
                 <div id="trackName">No track loaded.</div>
-            </div>
-
-            <div class="schedule-box">
-                <h3>Timetable</h3>
-                <div class="schedule-list" id="scheduleList">
-                </div>
             </div>
         </div>
     </div>
@@ -370,19 +386,29 @@
         let playlist = [];
         let currentTrackIndex = 0;
 
-        // --- 3. THEME LOGIC ---
+        // --- 3. THEME LOGIC (REVISED) ---
         function toggleTheme() {
             const body = document.body;
             body.classList.toggle('dark-mode');
             const btn = document.getElementById('themeBtn');
             const isDark = body.classList.contains('dark-mode');
-            btn.innerHTML = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+            
+            // Set button content and accessibility label based on mode
+            btn.innerHTML = isDark ? '☀️' : '🌙'; 
+            btn.setAttribute('aria-label', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+            
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
         }
+        
         window.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('themeBtn');
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
-                document.getElementById('themeBtn').innerHTML = '☀️ Light Mode';
+                btn.innerHTML = '☀️';
+                btn.setAttribute('aria-label', 'Switch to Light Mode');
+            } else {
+                btn.innerHTML = '🌙';
+                btn.setAttribute('aria-label', 'Switch to Dark Mode');
             }
             renderCalendar();
             renderWaterList();
@@ -394,21 +420,13 @@
             const now = new Date();
             let consumed = 0;
             let nextSip = null;
-            const waterListEl = document.getElementById('fullWaterList');
-            const items = waterListEl.getElementsByTagName('li');
 
             waterPlan.forEach((entry, index) => {
                 const entryTime = getTodayDate(entry.time);
-                // Handle midnight crossover for last entry
+                
+                // Handle midnight crossover for the last entry
                 if (entry.time === "00:00") {
-                     // If it's 00:00 (midnight), it refers to the start of the next day's 00:00.
-                     // But if current time is after noon, we want to treat it as today's 00:00 (i.e., yesterday's end).
-                     // A safer way is to check the hour. If the entry time is less than 8 AM (start of day), assume it's the next day.
-                     // For 00:00, if now is > 8 PM, assume next day. If now is < 8 AM, assume today.
-                     // Simplest: Check if entry time is logically *before* the current time today.
-                     if (now.getHours() < 8 && entryTime.getHours() > 0) {
-                         // Pass
-                     } else if (now.getHours() >= 8 && entryTime.getHours() < 8) {
+                     if (now.getHours() >= 8 && entryTime.getHours() < 8) {
                         entryTime.setDate(entryTime.getDate() + 1);
                      }
                 }
@@ -416,15 +434,17 @@
                 // Final Check
                 if (now >= entryTime) {
                     consumed += entry.ml;
-                    if(items[index]) items[index].classList.add('done');
                 } else {
                     if (!nextSip) nextSip = entry;
                 }
             });
             
-            // Re-render water list for status updates
-            waterListEl.innerHTML = waterPlan.map((p, index) => {
-                const isDone = consumed >= waterPlan.slice(0, index + 1).reduce((s, i) => s + i.ml, 0);
+            // Re-render water list for status updates (Done status depends on cumulative consumption)
+            const waterListEl = document.getElementById('fullWaterList');
+            let cumulativeWater = 0;
+            waterListEl.innerHTML = waterPlan.map((p) => {
+                cumulativeWater += p.ml;
+                const isDone = consumed >= cumulativeWater;
                 return `<li class="water-item ${isDone ? 'done' : ''}"><span>${p.time} ${p.note}</span> <span>${p.ml}ml</span></li>`;
             }).join('');
 
@@ -442,8 +462,8 @@
         }
 
         function renderWaterList() {
-            const list = document.getElementById('fullWaterList');
-            list.innerHTML = waterPlan.map(p => 
+            // Initial render, status will be updated by updateWaterHUD on start
+            document.getElementById('fullWaterList').innerHTML = waterPlan.map(p => 
                 `<li class="water-item"><span>${p.time} ${p.note}</span> <span>${p.ml}ml</span></li>`
             ).join('');
         }
@@ -519,6 +539,7 @@
                 div.className = `schedule-item ${status}`;
                 let taskDetails = item.task;
                 if (item.type === 'work' && item.breakdown.length > 0) {
+                     // Display shortened breakdown in schedule list
                      taskDetails += ' (' + item.breakdown.map(b => b.split(' ')[0] + ' ' + b.split(' ')[1]).join('/') + ')';
                 }
                 div.innerHTML = `<div class="time-col">${item.start}-${item.end}</div><div class="task-col">${taskDetails}</div>`;
