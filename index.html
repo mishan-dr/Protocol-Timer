@@ -4,20 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚡ ASCENSION PROTOCOL - EXECUTION MODE</title>
+    
+    <meta name="theme-color" content="#007bff">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png"> 
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <style>
         :root {
             --bg-color: #f7f9fc; 
             --card-bg: #ffffff;
             --primary: #007bff; /* Focus Blue */
             --accent: #ff7043; /* Action Orange */
+            --water: #00bcd4; /* Hydration Cyan */
             --text: #333333;
             --dim: #6c757d;
+            --border: #f0f0f0;
             --font-main: 'Roboto', sans-serif;
+        }
+
+        /* --- DARK MODE VARIABLES --- */
+        body.dark-mode {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --primary: #4da3ff;
+            --accent: #ff8a65;
+            --water: #26c6da;
+            --text: #e0e0e0;
+            --dim: #a0a0a0;
+            --border: #333333;
         }
 
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700;900&display=swap');
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s, color 0.3s; }
         
         body {
             background-color: var(--bg-color);
@@ -28,11 +49,20 @@
             flex-direction: column;
         }
 
-        /* --- Overlay (Initial State) --- */
+        /* --- Dark Mode Toggle --- */
+        .theme-toggle {
+            position: fixed; top: 20px; right: 20px;
+            background: var(--card-bg); border: 1px solid var(--border);
+            color: var(--text); padding: 10px 15px; border-radius: 50px;
+            cursor: pointer; z-index: 1100; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-weight: bold; display: flex; align-items: center; gap: 5px;
+        }
+        .theme-toggle:hover { transform: scale(1.05); }
+
+        /* --- Overlay --- */
         #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.98);
-            display: flex; justify-content: center; align-items: center;
+            background: var(--bg-color); display: flex; justify-content: center; align-items: center;
             flex-direction: column; z-index: 1000; cursor: pointer;
         }
         #overlay h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 30px; }
@@ -42,295 +72,172 @@
             border-radius: 50px; cursor: pointer; transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(255, 112, 67, 0.4);
         }
-        #overlay button:hover { background-color: #ff5722; transform: translateY(-2px); }
 
-        /* --- Main Content Layout --- */
+        /* --- Layout --- */
         .container {
-            display: flex;
-            max-width: 1200px;
-            margin: 20px auto;
-            width: 95%;
-            gap: 20px;
+            display: flex; max-width: 1200px; margin: 20px auto; width: 95%; gap: 20px;
         }
+        .left-panel { flex: 3; display: flex; flex-direction: column; gap: 20px; }
+        .right-panel { flex: 2; display: flex; flex-direction: column; gap: 20px; }
 
-        /* --- Left Panel (Timer, Task, Quote, New Counters) --- */
-        .left-panel {
-            flex: 3;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
+        /* --- Dashboard Head --- */
         .dashboard-head {
-            background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            text-align: center;
+            background-color: var(--card-bg); padding: 30px;
+            border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            text-align: center; position: relative;
         }
-
-        .protocol-title {
-            font-size: 1.4rem; font-weight: 900;
-            color: var(--primary); letter-spacing: 1px;
-            margin-bottom: 5px;
-        }
-
-        .current-task-main {
-            font-size: 2.5rem; font-weight: 900;
-            color: var(--text); margin: 10px 0;
-            text-transform: uppercase;
-        }
-
-        .countdown {
-            font-size: 6rem; font-weight: 100;
-            color: var(--accent); line-height: 1;
-        }
-
-        .sub-task-timer {
-            margin-top: 15px; padding: 10px;
-            background-color: #f0f0f0; border-radius: 8px;
-            font-size: 1.2rem; font-weight: 700;
-            color: var(--primary);
-        }
-
-        .sub-info {
-            margin-top: 10px; color: var(--dim);
-            font-size: 0.9rem; font-weight: 500;
-        }
-
-        /* --- Motivation Section --- */
-        .motivation-box {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            border-left: 5px solid var(--accent);
-        }
-        .motivation-box h3 {
-            color: var(--accent); font-size: 1rem;
-            margin-bottom: 10px; text-transform: uppercase;
-        }
-        #motivationQuote {
-            font-style: italic; font-size: 1.1rem;
-            font-weight: 400; color: var(--text);
-            line-height: 1.4;
-        }
+        .protocol-title { font-size: 1.4rem; font-weight: 900; color: var(--primary); letter-spacing: 1px; margin-bottom: 5px; }
+        .current-task-main { font-size: 2.5rem; font-weight: 900; color: var(--text); margin: 10px 0; text-transform: uppercase; }
+        .countdown { font-size: 6rem; font-weight: 100; color: var(--accent); line-height: 1; }
         
-        /* --- NEW COUNTERS WIDGET --- */
-        .counter-widget {
-            background: linear-gradient(135deg, #e0f7fa, #b3e5fc);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        .counter-widget h3 {
-            color: var(--primary);
-            font-size: 1.4rem;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            font-weight: 900;
-        }
-        .counter-grid {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 15px;
-        }
-        .counter-item {
+        .sub-task-timer { margin-top: 15px; padding: 10px; background-color: var(--bg-color); border-radius: 8px; font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+
+        /* --- Mini Water HUD --- */
+        .mini-water-hud {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 188, 212, 0.1);
+            border: 1px solid var(--water);
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
+            gap: 5px;
             align-items: center;
         }
-        .counter-value {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--accent);
-            line-height: 1;
-        }
-        .counter-label {
-            font-size: 0.8rem;
-            color: var(--dim);
-            text-transform: uppercase;
-            margin-top: 5px;
-        }
-        .counter-message {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text);
-            padding: 10px;
-            background-color: #fff;
-            border-radius: 6px;
-            border: 2px solid var(--accent);
-        }
+        .hud-row { display: flex; justify-content: space-between; width: 100%; max-width: 400px; font-size: 0.95rem; font-weight: 600; color: var(--text); }
+        .water-val { color: var(--water); font-weight: 900; font-size: 1.1rem; }
+        .progress-bar-bg { width: 100%; height: 8px; background-color: rgba(0,0,0,0.1); border-radius: 4px; margin-top: 5px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background-color: var(--water); width: 0%; transition: width 0.5s ease; }
+        .next-sip-alert { font-size: 0.85rem; color: var(--dim); margin-top: 5px; font-style: italic; }
 
+        /* --- Widgets --- */
+        .widgets-row { display: flex; gap: 20px; }
+        .widget-box { background-color: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); flex: 1; }
+        .widget-box h3 { color: var(--primary); font-size: 1rem; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 5px;}
 
-        /* --- Right Panel (Schedule & Music) --- */
-        .right-panel {
-            flex: 2;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+        /* Water List */
+        .water-list { list-style: none; font-size: 0.85rem; max-height: 200px; overflow-y: auto; }
+        .water-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); color: var(--text); }
+        .water-item.done { text-decoration: line-through; opacity: 0.5; }
 
-        /* --- Music Player Section (Side Panel) */
-        .music-player {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-        .music-player h3 {
-            color: var(--primary); margin-bottom: 10px; font-size: 1.2rem;
-        }
-        #fileInput { display: none; }
-        .file-label {
-            display: block; background-color: var(--primary);
-            color: white; padding: 10px 15px; border-radius: 8px;
-            cursor: pointer; text-align: center; font-weight: bold;
-            transition: background-color 0.3s;
-        }
-        .file-label:hover { background-color: #0056b3; }
-        audio {
-            width: 100%; margin-top: 15px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        #trackName {
-            font-size: 0.85rem; color: var(--dim); margin-top: 5px; text-align: center;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
+        /* --- NEW CALENDAR STYLES --- */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 0.85rem; }
+        .cal-day-header { font-weight: bold; color: var(--dim); font-size: 0.7rem; }
+        .cal-day { padding: 5px; border-radius: 4px; color: var(--text); }
+        .cal-day.today { background-color: var(--accent); color: white; font-weight: bold; }
+        
+        /* New Header for Arrows */
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: var(--primary); font-weight: bold; font-size: 0.9rem; }
+        .cal-btn { background: none; border: none; cursor: pointer; color: var(--accent); font-weight: bold; font-size: 1.2rem; padding: 0 10px; transition: transform 0.2s; }
+        .cal-btn:hover { transform: scale(1.2); color: var(--primary); }
 
-        /* --- Schedule List --- */
-        .schedule-box {
-            background-color: var(--card-bg);
-            padding: 20px 0 0 0;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            flex: 1; 
-            min-height: 300px;
-        }
-        .schedule-box h3 {
-            color: var(--text); font-size: 1.2rem; margin: 0 20px 10px;
-            border-bottom: 1px solid #eee; padding-bottom: 10px;
-        }
+        /* Counters */
+        .counter-widget { background: linear-gradient(135deg, rgba(0, 123, 255, 0.1), rgba(0, 123, 255, 0.2)); padding: 20px; border-radius: 12px; text-align: center; border: 1px solid var(--primary); }
+        .counter-grid { display: flex; justify-content: space-around; }
+        .counter-value { font-size: 2rem; font-weight: 900; color: var(--accent); }
+        .counter-label { font-size: 0.7rem; color: var(--dim); text-transform: uppercase; }
+        
+        /* Music & Schedule */
+        .music-player { background-color: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); }
+        .schedule-box { background-color: var(--card-bg); padding: 20px 0 0 0; border-radius: 12px; flex: 1; min-height: 300px; display: flex; flex-direction: column; }
+        .schedule-list { padding: 0 20px; overflow-y: auto; flex: 1; max-height: 60vh; }
+        .schedule-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); color: var(--dim); }
+        .schedule-item.active { background-color: rgba(0, 123, 255, 0.05); color: var(--primary); font-weight: 700; border-radius: 4px; padding: 12px 5px; margin: 0 -5px; }
+        .time-col { font-weight: 600; min-width: 90px; font-size: 0.9rem;}
+        .task-col { flex: 1; text-align: left; text-transform: uppercase; margin-left: 10px; font-size: 0.9rem;}
+        .footer { padding: 15px; text-align: center; font-size: 0.9rem; color: var(--dim); margin-top: 20px; }
 
-        /* Set a fixed height for the scroll container */
-        .schedule-list {
-            padding: 0 20px;
-            overflow-y: auto;
-            max-height: 80vh; 
-        }
-
-        .schedule-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-            color: var(--dim);
-            transition: all 0.2s;
-        }
-
-        /* Style for completed tasks */
-        .schedule-item.completed {
-            opacity: 0.4;
-            font-style: italic;
-            border-left: 3px solid #ccc;
-        }
-
-        .schedule-item.active {
-            background-color: rgba(0, 123, 255, 0.05);
-            color: var(--primary);
-            font-weight: 700;
-            border-radius: 4px;
-            padding: 12px 5px;
-            margin: 0 -5px;
-            opacity: 1; /* Ensure active item is fully opaque */
-        }
-
-        .time-col { font-weight: 600; min-width: 100px; }
-        .task-col { flex: 1; text-align: left; text-transform: uppercase; margin-left: 10px; font-size: 0.95rem;}
-
-        /* --- Footer --- */
-        .footer {
-            padding: 15px; text-align: center; font-size: 0.9rem;
-            color: var(--dim); border-top: 1px solid #e0e0e0;
-            margin-top: 20px;
-        }
-
-        /* Mobile adjustments */
         @media (max-width: 900px) {
             .container { flex-direction: column; }
-            .right-panel, .left-panel { flex: none; width: 100%; }
-            .dashboard-head { padding: 20px; }
-            .countdown { font-size: 5rem; }
-            .current-task-main { font-size: 1.8rem; }
-            .schedule-list { max-height: 40vh; }
+            .widgets-row { flex-direction: column; }
+            .countdown { font-size: 4rem; }
         }
     </style>
 </head>
 <body>
 
     <audio id="alarmSound" preload="auto"></audio>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Dark Mode</button>
 
     <div id="overlay">
         <h1>🦁 ASCENSION PROTOCOL</h1>
         <button onclick="startProtocol()">INITIATE PROTOCOL</button>
+        <p style="margin-top:20px; color:#999; font-size:0.9rem;">v2.2 // Calendar Navigation Enabled</p>
     </div>
 
     <div class="container">
         <div class="left-panel">
             <div class="dashboard-head">
-                <div class="protocol-title">EXECUTION MODE | CURRENT PHASE</div>
+                <div class="protocol-title">EXECUTION MODE</div>
                 <div class="countdown" id="timer">00:00:00</div>
                 <div class="current-task-main" id="taskName">LOADING...</div>
                 
                 <div class="sub-task-timer" id="subTaskTimer">
                     <span>Task Detail:</span> <span id="subTaskName">Awaiting Cycle Start</span>
                 </div>
-                
-                <div class="sub-info" id="nextTask">Up Next: ...</div>
+
+                <div class="mini-water-hud">
+                    <div class="hud-row">
+                        <span>💧 Intake So Far:</span>
+                        <span class="water-val" id="hudConsumed">0 ml</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="hudBar"></div>
+                    </div>
+                    <div class="hud-row" style="margin-top:5px; font-size:0.8rem; color:var(--dim);">
+                        <span>Target: 3500ml</span>
+                        <span id="hudPercent">0%</span>
+                    </div>
+                    <div class="next-sip-alert" id="hudNext">Next: Loading...</div>
+                </div>
             </div>
 
             <div class="counter-widget">
-                <h3>NEET TARGET LOCK</h3>
                 <div class="counter-grid">
                     <div class="counter-item">
                         <div class="counter-value" id="daysCount">000</div>
-                        <div class="counter-label">Days</div>
+                        <div class="counter-label">Days Left</div>
                     </div>
                     <div class="counter-item">
                         <div class="counter-value" id="hoursCount">00</div>
                         <div class="counter-label">Hours</div>
                     </div>
-                    <div class="counter-item">
-                        <div class="counter-value" id="minutesCount">00</div>
-                        <div class="counter-label">Minutes</div>
-                    </div>
                 </div>
-                <div class="counter-message">
-                    Execute this plan for **90 Days**, then let the rest of your life settle.
+                <div style="margin-top:10px; font-weight:bold; color:var(--primary);">NEET TARGET LOCK</div>
+            </div>
+
+            <div class="widgets-row">
+                <div class="widget-box">
+                    <h3>🚰 Hydration Schedule</h3>
+                    <ul class="water-list" id="fullWaterList">
+                    </ul>
+                </div>
+
+                <div class="widget-box">
+                    <h3>📅 Protocol Log</h3>
+                    <div id="miniCalendar"></div>
                 </div>
             </div>
             
-            <div class="motivation-box">
-                <h3>Mindset Hardening</h3>
-                <blockquote id="motivationQuote">"Your transformation begins when you stop negotiating with yourself."</blockquote>
+            <div class="motivation-box" style="background:var(--card-bg); padding:15px; border-radius:12px; border-left:4px solid var(--accent);">
+                <blockquote id="motivationQuote" style="font-style:italic; color:var(--text);">"Loading quote..."</blockquote>
             </div>
 
         </div>
 
         <div class="right-panel">
             <div class="music-player">
-                <h3>🎧 Focused Soundscape</h3>
-                <label for="fileInput" class="file-label">Load Study Tracks</label>
-                <input type="file" id="fileInput" multiple accept="audio/*">
-                <audio id="musicPlayer" controls loop></audio>
-                <div id="trackName">No track loaded.</div>
+                <h3>🎧 Audio Focus</h3>
+                <label for="fileInput" class="file-label" style="display:block; background:var(--primary); color:white; text-align:center; padding:10px; border-radius:6px; margin-bottom:10px; cursor:pointer;">Load Tracks</label>
+                <input type="file" id="fileInput" multiple accept="audio/*" style="display:none;">
+                <audio id="musicPlayer" controls loop style="width:100%;"></audio>
+                <div id="trackName" style="text-align:center; font-size:0.8rem; margin-top:5px; color:var(--dim);">No track loaded.</div>
             </div>
 
             <div class="schedule-box">
-                <h3>Protocol Timetable</h3>
+                <h3 style="margin:0 20px 10px; border-bottom:1px solid var(--border); padding-bottom:10px; color:var(--text);">Timetable</h3>
                 <div class="schedule-list" id="scheduleList">
-                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -340,7 +247,7 @@
     </div>
 
     <script>
-        // --- Configuration ---
+        // --- 1. CONFIGURATION ---
         const schedule = [
             { start: "08:00", end: "08:30", task: "🌅 WAKE UP (Hydrate & Prep)", type: "prep", breakdown: [] },
             { start: "08:30", end: "10:00", task: "⚔️ CYCLE 1", type: "work", breakdown: ["25 min Revision", "20 min Timed Questions", "45 min Lecture"] },
@@ -360,179 +267,162 @@
             { start: "20:45", end: "22:15", task: "⚔️ CYCLE 7", type: "work", breakdown: ["25 min Revision", "20 min Timed Questions", "45 min Lecture"] },
             { start: "22:15", end: "22:30", task: "☕ BREAK", type: "break", breakdown: [] },
             { start: "22:30", end: "23:59", task: "🧨 CYCLE 8 (THE KILLER)", type: "work", breakdown: ["25 min Revision", "20 min Timed Questions", "45 min Lecture"] }, 
-            { start: "00:00", end: "00:20", task: "📖 WIND DOWN (Skim & Reset)", type: "prep", breakdown: [] },
+            { start: "00:00", end: "00:20", task: "📖 WIND DOWN", type: "prep", breakdown: [] },
             { start: "00:20", end: "08:00", task: "😴 SLEEP & RECOVER", type: "sleep", breakdown: [] }
         ];
-        
-        // Target Exam Date (Adjust this date for your actual exam)
-        const NEET_TARGET_DATE = new Date('May 4, 2026 14:00:00'); 
 
-        const quotes = [
-            "Every distraction is a sniper bullet to your rank. Stay locked.",
-            "Identity hardens when focus becomes default. You are ascending.",
-            "While the world sleeps, you sharpen your edge. Dominate this cycle.",
-            "Physics will start clicking. Biology will become reflex. Trust the process.",
-            "Your past will scratch you. Your future will pull you. Keep moving.",
-            "The brain never overfills. This is execution mode, not timepass studying.",
-            "Your confidence will harden. Panic will reduce. Vision will sharpen.",
-            "Success is the sum of small efforts, repeated day in and day out.",
-            "My day is locked. My destiny is loading. Let's execute."
+        const waterPlan = [
+            { time: "08:00", ml: 400, note: "Wake Up (Flush)" },
+            { time: "08:30", ml: 200, note: "Pre-Cycle 1" },
+            { time: "10:00", ml: 250, note: "Post-Cycle 1" },
+            { time: "11:45", ml: 350, note: "Post-Cycle 2" },
+            { time: "12:00", ml: 400, note: "Lunch (Digestion)" },
+            { time: "14:15", ml: 250, note: "Post-Cycle 3" },
+            { time: "16:00", ml: 350, note: "Post-Cycle 4" },
+            { time: "17:45", ml: 300, note: "Pre-Workout" },
+            { time: "18:30", ml: 300, note: "Workout Sip" },
+            { time: "19:00", ml: 300, note: "Dinner" },
+            { time: "20:30", ml: 200, note: "Post-Cycle 6" },
+            { time: "22:15", ml: 250, note: "Post-Cycle 7" },
+            { time: "00:00", ml: 150, note: "Post-Cycle 8" }
         ];
+        
+        const NEET_TARGET_DATE = new Date('May 4, 2026 14:00:00'); 
+        const quotes = ["Distraction is death.", "Identity is focus.", "While they sleep, you grind.", "Physics is logic. Biology is reflex.", "Don't negotiate with yourself."];
 
-        // --- Global Variables & Audio Context ---
+        // --- 2. GLOBAL VARIABLES ---
         let protocolStarted = false;
         let lastSeconds = -1;
         let lastCycleIndex = -1;
         let lastSubTaskIndex = -1;
-        let currentSubTaskEnd = null;
+        
+        // Calendar view state
+        let calendarViewDate = new Date(); 
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
         const musicPlayer = document.getElementById('musicPlayer');
         const fileInput = document.getElementById('fileInput');
         const trackNameEl = document.getElementById('trackName');
         const scheduleListEl = document.getElementById('scheduleList');
-        
         let playlist = [];
         let currentTrackIndex = 0;
 
-        // --- Music Player Logic ---
-        function handleFileSelection(event) {
-            playlist = Array.from(event.target.files);
-            currentTrackIndex = 0;
-            if (playlist.length > 0) {
-                loadAndPlayTrack();
-            } else {
-                trackNameEl.textContent = 'No track loaded.';
+        // --- 3. THEME LOGIC ---
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            const btn = document.getElementById('themeBtn');
+            const isDark = body.classList.contains('dark-mode');
+            btn.innerHTML = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeBtn').innerHTML = '☀️ Light Mode';
             }
-        }
-
-        function loadAndPlayTrack() {
-            if (playlist.length === 0) return;
-            const file = playlist[currentTrackIndex];
-            const objectURL = URL.createObjectURL(file);
-            
-            musicPlayer.src = objectURL;
-            
-            trackNameEl.textContent = `Playing: ${file.name}`;
-            
-            musicPlayer.play().catch(e => console.error("Autoplay prevented:", e));
-        }
-
-        musicPlayer.addEventListener('ended', () => {
-            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
-            loadAndPlayTrack();
+            renderCalendar();
+            renderWaterList();
         });
 
-        fileInput.addEventListener('change', handleFileSelection);
+        // --- 4. WATER HUD LOGIC ---
+        function updateWaterHUD() {
+            const now = new Date();
+            let consumed = 0;
+            let nextSip = null;
+            const waterListEl = document.getElementById('fullWaterList');
+            const items = waterListEl.getElementsByTagName('li');
 
-        // --- Alarm Logic ---
-        function playAlarm() {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
+            waterPlan.forEach((entry, index) => {
+                const entryTime = getTodayDate(entry.time);
+                if (entry.time === "00:00" && now.getHours() > 12) {
+                     entryTime.setDate(entryTime.getDate() + 1);
+                }
+                if (now >= entryTime) {
+                    consumed += entry.ml;
+                    if(items[index]) items[index].classList.add('done');
+                } else {
+                    if (!nextSip) nextSip = entry;
+                }
+            });
+
+            document.getElementById('hudConsumed').innerText = consumed + " ml";
+            const percent = Math.min(100, Math.floor((consumed / 3700) * 100));
+            document.getElementById('hudPercent').innerText = percent + "%";
+            document.getElementById('hudBar').style.width = percent + "%";
             
-            oscillator.type = 'triangle';
-            oscillator.frequency.setValueAtTime(600, audioCtx.currentTime); 
-            
-            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.5);
-        }
-
-        // --- Quote Update Logic ---
-        function updateQuote() {
-            const index = Math.floor(Math.random() * quotes.length);
-            document.getElementById('motivationQuote').innerText = quotes[index];
-        }
-
-        // --- NEET Counter Logic ---
-        function updateNeetCounter() {
-            const now = new Date().getTime();
-            const distance = NEET_TARGET_DATE.getTime() - now;
-
-            if (distance < 0) {
-                document.getElementById('daysCount').innerText = "000";
-                document.getElementById('hoursCount').innerText = "00";
-                document.getElementById('minutesCount').innerText = "00";
-                return;
+            if (nextSip) {
+                document.getElementById('hudNext').innerText = `Next: ${nextSip.ml}ml @ ${nextSip.time} (${nextSip.note})`;
+            } else {
+                document.getElementById('hudNext').innerText = "Hydration Goal Complete.";
             }
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            
-            document.getElementById('daysCount').innerText = String(days).padStart(3, '0');
-            document.getElementById('hoursCount').innerText = String(hours).padStart(2, '0');
-            document.getElementById('minutesCount').innerText = String(minutes).padStart(2, '0');
         }
 
-        // --- Helper function to create a schedule item HTML ---
-        function createScheduleItemHTML(item, index, status) {
-            const div = document.createElement('div');
-            let classes = 'schedule-item';
-            if (status === 'active') classes += ' active';
-            if (status === 'completed') classes += ' completed';
+        function renderWaterList() {
+            const list = document.getElementById('fullWaterList');
+            let html = '';
+            waterPlan.forEach(p => {
+                html += `<li class="water-item"><span>${p.time} ${p.note}</span> <span>${p.ml}ml</span></li>`;
+            });
+            list.innerHTML = html;
+        }
 
-            div.className = classes;
-            div.id = `item-${index}`;
+        // --- 5. CALENDAR LOGIC (UPDATED WITH NAVIGATION) ---
+        function renderCalendar() {
+            const calContainer = document.getElementById('miniCalendar');
             
-            let taskDetails = item.task;
-            if (item.type === 'work' && item.breakdown.length > 0) {
-                 taskDetails += ' (' + item.breakdown.map(b => b.split(' ')[0] + ' ' + b.split(' ')[1]).join('/') + ')';
-            }
+            const viewYear = calendarViewDate.getFullYear();
+            const viewMonth = calendarViewDate.getMonth();
+            
+            // Real date for highlighting 'today'
+            const realNow = new Date();
+            const realDay = realNow.getDate();
+            const realMonth = realNow.getMonth();
+            const realYear = realNow.getFullYear();
 
-            div.innerHTML = `
-                <div class="time-col">${item.start} - ${item.end}</div>
-                <div class="task-col">${taskDetails}</div>
+            const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+            const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+            
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+            let html = `
+                <div class="cal-header">
+                    <button class="cal-btn" onclick="changeMonth(-1)">&#10094;</button>
+                    <span>${monthNames[viewMonth]} ${viewYear}</span>
+                    <button class="cal-btn" onclick="changeMonth(1)">&#10095;</button>
+                </div>
+                <div class="calendar-grid">
             `;
-            return div;
-        }
-
-        // --- Re-render Schedule List Logic (THE FIX) ---
-        function reorderScheduleList(currentTaskIndex) {
-            scheduleListEl.innerHTML = '';
             
-            const listFragment = document.createDocumentFragment();
-            const completedItems = [];
-
-            // 1. Add current and future tasks
-            for (let i = currentTaskIndex; i < schedule.length; i++) {
-                const status = (i === currentTaskIndex) ? 'active' : 'future';
-                listFragment.appendChild(createScheduleItemHTML(schedule[i], i, status));
-            }
-
-            // 2. Collect tasks completed today (i.e., before the current task)
-            for (let i = 0; i < currentTaskIndex; i++) {
-                completedItems.push(createScheduleItemHTML(schedule[i], i, 'completed'));
-            }
-
-            // 3. Append completed tasks to the bottom of the list
-            completedItems.forEach(item => listFragment.appendChild(item));
+            ['S','M','T','W','T','F','S'].forEach(d => html += `<div class="cal-day-header">${d}</div>`);
             
-            scheduleListEl.appendChild(listFragment);
-
-            // Since the list is re-rendered with the active task at the top, 
-            // we no longer need scrollIntoView. The 'active' item is the first child.
-            // The list acts like a true roller.
+            // Empty slots
+            for(let i=0; i<firstDay; i++) html += `<div></div>`;
+            
+            // Days
+            for(let i=1; i<=daysInMonth; i++) {
+                let classes = "cal-day";
+                // Only highlight if view matches real date
+                if (i === realDay && viewMonth === realMonth && viewYear === realYear) {
+                    classes += " today";
+                }
+                html += `<div class="${classes}">${i}</div>`;
+            }
+            html += `</div>`;
+            calContainer.innerHTML = html;
         }
-        
-        // --- Dummy function for initial render (optional now, but kept for structure) ---
-        function renderSchedule() {
-            // Initial render is now handled entirely within updateTimer/reorderScheduleList
-            // We ensure updateTimer is called immediately after startProtocol.
+
+        function changeMonth(offset) {
+            // Update view date by offset
+            calendarViewDate.setMonth(calendarViewDate.getMonth() + offset);
+            renderCalendar();
         }
 
+        // --- 6. SCHEDULE & TIMER ---
         function getTodayDate(timeStr) {
             const now = new Date();
             const [hours, minutes] = timeStr.split(':').map(Number);
-            const date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0);
-            return date;
+            return new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0);
         }
 
         function formatTime(ms) {
@@ -542,55 +432,54 @@
             const s = totalSeconds % 60;
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
-        
-        function updateSubTask(now, currentItem, currentItemStart) {
-            const subTaskEl = document.getElementById('subTaskName');
-            const breakdown = currentItem.breakdown;
+
+        function reorderScheduleList(currentTaskIndex) {
+            scheduleListEl.innerHTML = '';
+            const listFragment = document.createDocumentFragment();
+            const completedItems = [];
             
-            if (!breakdown || breakdown.length === 0) {
-                subTaskEl.innerText = currentItem.type === 'work' ? "Focused Work Period" : "Scheduled Rest/Prep";
-                currentSubTaskEnd = null; 
-                lastSubTaskIndex = -1;
-                return;
+            const createItem = (item, idx, status) => {
+                const div = document.createElement('div');
+                div.className = `schedule-item ${status}`;
+                div.innerHTML = `<div class="time-col">${item.start}-${item.end}</div><div class="task-col">${item.task}</div>`;
+                return div;
+            };
+
+            for (let i = currentTaskIndex; i < schedule.length; i++) {
+                listFragment.appendChild(createItem(schedule[i], i, i === currentTaskIndex ? 'active' : ''));
             }
-
-            let accumulatedDurationMs = 0;
-            let currentSubTask = null;
-            
-            for (let i = 0; i < breakdown.length; i++) {
-                const parts = breakdown[i].split(' ');
-                const durationMinutes = parseInt(parts[0]);
-                const durationMs = durationMinutes * 60 * 1000;
-                
-                const subTaskStartTime = new Date(currentItemStart.getTime() + accumulatedDurationMs);
-                const subTaskEndTime = new Date(currentItemStart.getTime() + accumulatedDurationMs + durationMs);
-
-                if (now >= subTaskStartTime && now < subTaskEndTime) {
-                    currentSubTask = breakdown[i];
-                    currentSubTaskEnd = subTaskEndTime;
-                    
-                    const subDiff = currentSubTaskEnd - now;
-                    subTaskEl.innerText = `${currentSubTask} (Ends in ${formatTime(subDiff)})`;
-
-                    if (Math.floor(subDiff / 1000) === 0 && i !== lastSubTaskIndex) {
-                        playAlarm(); 
-                    }
-                    lastSubTaskIndex = i;
-
-                    break;
-                }
-                
-                accumulatedDurationMs += durationMs;
+            for (let i = 0; i < currentTaskIndex; i++) {
+                completedItems.push(createItem(schedule[i], i, 'completed'));
             }
-            
-            if (!currentSubTask) {
-                subTaskEl.innerText = "Execution Mode: Task Transition";
-                currentSubTaskEnd = null;
-                lastSubTaskIndex = -1;
-            }
+            completedItems.forEach(item => listFragment.appendChild(item));
+            scheduleListEl.appendChild(listFragment);
         }
 
-        // --- Main Update Loop ---
+        function updateSubTask(now, currentItem, currentItemStart) {
+            const subTaskEl = document.getElementById('subTaskName');
+            if (!currentItem.breakdown.length) {
+                subTaskEl.innerText = currentItem.type === 'work' ? "Deep Work Phase" : "Recovery Phase";
+                return;
+            }
+            let acc = 0;
+            let found = false;
+            for (let i = 0; i < currentItem.breakdown.length; i++) {
+                const part = currentItem.breakdown[i];
+                const dur = parseInt(part.split(' ')[0]) * 60000;
+                const start = new Date(currentItemStart.getTime() + acc);
+                const end = new Date(start.getTime() + dur);
+                if (now >= start && now < end) {
+                    subTaskEl.innerText = `${part} (Ends: ${formatTime(end - now)})`;
+                    if (Math.floor((end - now)/1000) === 0 && i !== lastSubTaskIndex) playAlarm();
+                    lastSubTaskIndex = i;
+                    found = true;
+                    break;
+                }
+                acc += dur;
+            }
+            if(!found) subTaskEl.innerText = "Transitioning...";
+        }
+
         function updateTimer() {
             const now = new Date();
             let currentTaskIndex = -1;
@@ -598,94 +487,89 @@
             for (let i = 0; i < schedule.length; i++) {
                 let start = getTodayDate(schedule[i].start);
                 let end = getTodayDate(schedule[i].end);
-
-                // Handle tasks crossing midnight
                 if (end < start) {
-                    if (now >= start) {
-                        end.setDate(end.getDate() + 1);
-                    } else if (now < end) {
-                        start.setDate(start.getDate() - 1);
-                    }
+                    if (now >= start) end.setDate(end.getDate() + 1);
+                    else if (now < end) start.setDate(start.getDate() - 1);
                 }
 
                 if (now >= start && now < end) {
                     currentTaskIndex = i;
                     const diff = end - now;
-                    
                     document.getElementById('taskName').innerText = schedule[i].task;
                     document.getElementById('timer').innerText = formatTime(diff);
-                    
                     updateSubTask(now, schedule[i], start);
 
                     if (currentTaskIndex !== lastCycleIndex) {
-                        playAlarm(); 
-                        if (schedule[i].type === 'work') {
-                            updateQuote();
-                        }
-                        
-                        // 💡 FIX IMPLEMENTATION: Re-render the list when the task changes
-                        reorderScheduleList(currentTaskIndex); 
+                        playAlarm();
+                        if (schedule[i].type === 'work') document.getElementById('motivationQuote').innerText = quotes[Math.floor(Math.random()*quotes.length)];
+                        reorderScheduleList(currentTaskIndex);
                     }
                     lastCycleIndex = currentTaskIndex;
-
-                    if (Math.floor(diff / 1000) === 0 && Math.floor(diff/1000) !== lastSeconds) {
-                        playAlarm(); 
-                    }
-                    lastSeconds = Math.floor(diff / 1000);
-
+                    if(Math.floor(diff/1000) === 0 && Math.floor(diff/1000) !== lastSeconds) playAlarm();
+                    lastSeconds = Math.floor(diff/1000);
+                    
                     const timerEl = document.getElementById('timer');
                     timerEl.style.color = (diff < 600000 && diff > 0) ? 'var(--accent)' : 'var(--primary)'; 
-                    timerEl.style.animation = (diff < 300000 && diff > 0) ? 'pulse 1s infinite' : 'none'; 
-
-                    let nextIdx = (i + 1) % schedule.length;
-                    document.getElementById('nextTask').innerText = `NEXT: ${schedule[nextIdx].task} @ ${schedule[nextIdx].start}`;
-
                     break;
                 }
             }
-            
-            // Handle cases where the time is before the first task or after the last task
-            if (currentTaskIndex === -1 && lastCycleIndex !== -1) {
-                // If we finished the final task, re-render to push all tasks to 'completed'
-                reorderScheduleList(schedule.length); 
-                lastCycleIndex = -1;
-            } else if (currentTaskIndex !== -1) {
-                 // Even if the index didn't change, apply the active class just in case of initial load or minor glitch
-                const activeItem = document.getElementById(`item-${currentTaskIndex}`);
-                if (activeItem) {
-                    activeItem.classList.add('active');
-                }
-            }
+            if (currentTaskIndex === -1 && lastCycleIndex !== -1) reorderScheduleList(schedule.length);
         }
-        
-        // --- Initialization ---
+
+        // --- 7. UTILS ---
+        function playAlarm() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+        }
+
+        function updateNeetCounter() {
+            const diff = NEET_TARGET_DATE - new Date();
+            if(diff<0) return;
+            document.getElementById('daysCount').innerText = String(Math.floor(diff / (1000*60*60*24))).padStart(3,'0');
+            document.getElementById('hoursCount').innerText = String(Math.floor((diff % (1000*60*60*24))/(1000*60*60))).padStart(2,'0');
+        }
+
+        // Music
+        fileInput.addEventListener('change', (e) => {
+            playlist = Array.from(e.target.files);
+            currentTrackIndex = 0;
+            if(playlist.length) {
+                const url = URL.createObjectURL(playlist[0]);
+                musicPlayer.src = url;
+                trackNameEl.innerText = `Playing: ${playlist[0].name}`;
+                musicPlayer.play();
+            }
+        });
+        musicPlayer.addEventListener('ended', () => {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            musicPlayer.src = URL.createObjectURL(playlist[currentTrackIndex]);
+            trackNameEl.innerText = `Playing: ${playlist[currentTrackIndex].name}`;
+            musicPlayer.play();
+        });
+
+        // Start
         function startProtocol() {
             document.getElementById('overlay').style.display = 'none';
-            protocolStarted = true;
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            
             updateNeetCounter();
-            updateQuote(); 
-            
-            // Initial call to updateTimer handles the first rendering/ordering
-            updateTimer(); 
-            
+            updateTimer();
+            updateWaterHUD(); 
             setInterval(updateTimer, 1000);
-            setInterval(updateNeetCounter, 60000); // Update NEET counter every minute
+            setInterval(updateNeetCounter, 60000);
+            setInterval(updateWaterHUD, 60000);
         }
 
-        // --- Animation Definition ---
-        const styleSheet = document.createElement("style");
-        styleSheet.type = "text/css";
-        styleSheet.innerText += `
-            @keyframes pulse {
-                0% { opacity: 0.8; transform: scale(1); }
-                50% { opacity: 1; transform: scale(1.01); }
-                100% { opacity: 0.8; transform: scale(1); }
-            }
-        `;
-        document.head.appendChild(styleSheet);
-
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(console.error);
+        }
     </script>
 </body>
 </html>
