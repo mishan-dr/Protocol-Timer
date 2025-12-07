@@ -16,9 +16,9 @@
             --water: #00bcd4; 
             
             /* Subject Colors */
-            --bio: #4caf50;    /* Green */
-            --chem: #2196f3;   /* Blue */
-            --phy: #d9534f;    /* Red */
+            --bio: #4caf50;    
+            --chem: #2196f3;   
+            --phy: #d9534f;    
             
             --text: #1c2a38;
             --dim: #5c6c7c;
@@ -48,12 +48,12 @@
             width: 100vw;
             display: flex;
             flex-direction: column;
-            padding: 15px;
+            padding: 10px; /* Tighter padding for 900p screens */
             overflow: hidden; 
         }
 
-        /* Responsive Fallback */
-        @media (max-height: 800px), (max-width: 1000px) {
+        /* Responsive Fallback for Mobile */
+        @media (max-width: 1000px) {
             body { height: auto; overflow-y: auto; }
             .container { flex-direction: column; height: auto !important; }
             .left-panel, .right-panel { height: auto !important; }
@@ -76,19 +76,19 @@
         #overlay h1 { font-size: 2rem; color: var(--primary); margin-bottom: 20px; font-weight: 900; }
         #overlay button { padding: 12px 30px; font-size: 1rem; font-weight: 700; color: white; background-color: var(--primary); border: none; border-radius: 50px; cursor: pointer; }
 
-        /* --- LAYOUT --- */
+        /* --- LAYOUT (1440x900 Optimized) --- */
         .container { 
             display: flex; 
             width: 100%; 
-            height: 100%; 
-            gap: 15px; 
+            height: 100%; /* Fill remaining height */
+            gap: 10px; /* Reduced gap */
             margin: 0 auto;
-            max-width: 1600px;
+            max-width: 1440px;
         }
-        .left-panel { flex: 3; display: flex; flex-direction: column; gap: 15px; height: 100%; overflow: hidden; }
-        .right-panel { flex: 2; display: flex; flex-direction: column; gap: 15px; height: 100%; overflow: hidden; }
+        .left-panel { flex: 3; display: flex; flex-direction: column; gap: 10px; height: 100%; overflow: hidden; }
+        .right-panel { flex: 2; display: flex; flex-direction: column; gap: 10px; height: 100%; overflow: hidden; }
 
-        /* --- STAR TRAIL EFFECT (Restored Speed) --- */
+        /* --- STAR TRAIL (UNIFORM SPEED RESTORED) --- */
         .star-box { position: relative; overflow: hidden; }
         .star-line { position: absolute; border-radius: 2px; opacity: 0; }
         
@@ -100,7 +100,7 @@
         .star-right { 
             top: 0; right: 0; width: 3px; height: 100%; 
             background: linear-gradient(180deg, transparent 70%, var(--primary)); 
-            animation: animate-right 4s linear infinite; 
+            animation: animate-right 4s linear infinite;
             animation-delay: 1s;
         }
         .star-bottom { 
@@ -122,10 +122,14 @@
         @keyframes animate-left { 0% { bottom: -100%; opacity: 1; } 50% { bottom: 100%; opacity: 1; } 51%, 100% { bottom: 100%; opacity: 0; } }
 
         /* --- WIDGETS --- */
+        
+        /* 1. LEFT PANEL WIDGETS */
         .dashboard-head { 
             background-color: var(--card-bg); padding: 15px; border-radius: 12px; 
             box-shadow: var(--shadow); text-align: center; border-top: 4px solid var(--primary); 
-            display: flex; flex-direction: column; justify-content: center; flex: 1; min-height: 200px;
+            display: flex; flex-direction: column; justify-content: center; 
+            flex: 1.2; /* Takes slightly more space */
+            min-height: 0; /* Prevents overflow */
         }
         .protocol-title { font-size: 0.8rem; font-weight: 800; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; }
         .countdown { font-size: 4.5rem; font-weight: 900; color: var(--text); line-height: 0.9; margin: 5px 0; letter-spacing: -2px;}
@@ -138,49 +142,61 @@
         .sub-task-timer strong { color: var(--dim); font-size: 0.75rem; display: block; font-weight: 700; text-transform: uppercase;}
         .sub-task-timer span { font-weight: 800; color: var(--primary); }
 
-        .lec-command-box { background-color: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .lec-command-box { 
+            background-color: var(--card-bg); padding: 15px; border-radius: 12px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border); 
+            flex: 1; 
+            display: flex; flex-direction: column; justify-content: space-between;
+            min-height: 0;
+        }
         .lec-header { font-size: 0.9rem; font-weight: 800; color: var(--text); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; }
-        .lec-global-stats { display: flex; justify-content: space-between; margin-bottom: 10px; background: var(--bg-color); padding: 10px; border-radius: 8px; }
+        .lec-global-stats { display: flex; justify-content: space-between; margin-bottom: 10px; background: var(--bg-color); padding: 8px; border-radius: 8px; }
         .lg-item { text-align: center; flex: 1; }
-        .lg-val { display: block; font-size: 1.5rem; font-weight: 900; line-height: 1; color: var(--text); }
+        .lg-val { display: block; font-size: 1.4rem; font-weight: 900; line-height: 1; color: var(--text); }
         .lg-lbl { font-size: 0.6rem; font-weight: 700; color: var(--dim); text-transform: uppercase; margin-top: 2px; }
 
-        .subject-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .subject-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 5px; }
         .sub-card { background: var(--bg-color); padding: 8px; border-radius: 8px; text-align: center; border: 1px solid var(--border); }
         .sub-name { font-size: 0.7rem; font-weight: 800; margin-bottom: 2px; }
         .sub-count { font-size: 1.2rem; font-weight: 900; }
         .bio .sub-name, .bio .sub-count { color: var(--bio); } .chem .sub-name, .chem .sub-count { color: var(--chem); } .phy .sub-name, .phy .sub-count { color: var(--phy); }
         
-        /* RESTORED BAR STYLE */
         .daily-bar-sec { margin-top: 5px; }
         .db-label { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 700; color: var(--dim); margin-bottom: 3px; }
         .stat-bar-bg { width: 100%; height: 8px; background-color: var(--border); border-radius: 4px; overflow: hidden; }
         
+        /* RESTORED SINGLE WHITE TIP STYLE */
         #dailyLecBar {
             height: 100%;
             width: 0%;
             transition: width 0.5s;
             border-radius: 4px;
-            /* Reverted to Dark Bar with White Tip */
             background: linear-gradient(90deg, var(--text) 0%, var(--text) 85%, #ffffff 100%);
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
         }
 
-        .analytics-box { background-color: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); flex: 0.8; display: flex; flex-direction: column; justify-content: center; }
+        .analytics-box { 
+            background-color: var(--card-bg); padding: 15px; border-radius: 12px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border); 
+            flex: 0.8; 
+            display: flex; flex-direction: column; justify-content: center;
+            min-height: 0;
+        }
         .analytics-box h3 { color: var(--text); font-size: 0.9rem; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; }
-        .stat-row { margin-bottom: 10px; }
+        .stat-row { margin-bottom: 8px; }
         .stat-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; margin-bottom: 4px; color: var(--dim); }
-        
         .stat-bar-fill { height: 100%; width: 0%; transition: width 0.5s; border-radius: 4px; }
 
+        /* 2. RIGHT PANEL WIDGETS */
         .neet-detailed-box { 
             background: var(--card-bg); padding: 12px; border-radius: 12px; 
             border: 1px solid var(--border); box-shadow: var(--shadow); 
-            border-top: 4px solid var(--primary); height: 90px;
+            border-top: 4px solid var(--primary); 
+            height: 80px; /* Fixed small height */
             display: flex; flex-direction: column; justify-content: center;
+            flex-shrink: 0; /* Don't shrink */
         }
-        .neet-main-label { text-align: center; font-size: 0.9rem; font-weight: 900; color: var(--primary); margin-bottom: 5px; letter-spacing: 1px; }
-
+        .neet-main-label { text-align: center; font-size: 0.85rem; font-weight: 900; color: var(--primary); margin-bottom: 5px; letter-spacing: 1px; }
         .neet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
         .neet-grid-item { text-align: center; border-right: 1px solid var(--border); }
         .neet-grid-item:last-child { border-right: none; }
@@ -190,7 +206,8 @@
         .schedule-box { 
             background-color: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow); 
             display: flex; flex-direction: column; border: 1px solid var(--border); overflow: hidden; 
-            flex: 2; 
+            flex: 2; /* Main grower */
+            min-height: 0; 
         }
         .schedule-header { padding: 10px 15px; background: var(--bg-color); border-bottom: 1px solid var(--border); font-weight: 800; color: var(--text); font-size: 0.85rem; }
         .schedule-list { padding: 0; overflow-y: auto; flex: 1; display: flex; flex-direction: column; }
@@ -200,7 +217,13 @@
         .schedule-divider { text-align: center; font-size: 0.65rem; color: var(--dim); padding: 4px; background: var(--bg-color); font-weight: 700; border-bottom:1px solid var(--border); order: 99;}
         .time-col { font-weight: 700; min-width: 70px; }
 
-        .widget-box { background-color: var(--card-bg); padding: 12px; border-radius: 8px; box-shadow: var(--shadow); border: 1px solid var(--border); flex: 1; display: flex; flex-direction: column;}
+        .widget-box { 
+            background-color: var(--card-bg); padding: 12px; border-radius: 8px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border); 
+            flex: 0.8; 
+            display: flex; flex-direction: column;
+            min-height: 0;
+        }
         .widget-box h3 { color: var(--primary); font-size: 0.85rem; margin-bottom: 8px; font-weight: 800; }
         .water-list { list-style: none; font-size: 0.75rem; overflow-y: auto; flex: 1; }
         .water-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed var(--border); color: var(--text); }
@@ -210,6 +233,7 @@
             background: var(--card-bg); padding: 10px; border-radius: 8px; 
             box-shadow: var(--shadow); border: 1px solid var(--border); 
             height: 70px; display: flex; flex-direction: column; justify-content: center; 
+            flex-shrink: 0;
         }
         .graph-title { font-size: 0.65rem; font-weight: 800; color: var(--dim); text-transform: uppercase; margin-bottom: 2px; }
         canvas#intensityGraph { width: 100%; height: 100%; }
@@ -217,9 +241,11 @@
         .quote-box { 
             padding: 10px; background: var(--card-bg); border-radius: 12px; 
             border-left: 4px solid var(--primary); box-shadow: var(--shadow); 
-            height: 60px; display: flex; align-items: center; justify-content: center; text-align: center;
+            height: 50px; /* Small footer */
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            flex-shrink: 0;
         }
-        #rotatingQuote { font-style: italic; font-weight: 500; color: var(--text); font-size: 0.8rem; line-height: 1.3; }
+        #rotatingQuote { font-style: italic; font-weight: 500; color: var(--text); font-size: 0.8rem; line-height: 1.2; }
 
     </style>
 </head>
@@ -331,37 +357,26 @@
         window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
         installBtn.addEventListener('click', () => { installBtn.style.display = 'none'; deferredPrompt.prompt(); deferredPrompt = null; });
 
-        // --- DATA WITH NEW INTERLEAVED SCHEDULE ---
+        // --- SCHEDULE (Bio-Chem-Phy Rotation) ---
         const schedule = [
             { start: "08:00", end: "08:30", task: "🌅 WAKE UP + HYDRATE", type: "prep", breakdown: [] },
-            
-            // ROTATION 1: BIO -> CHEM -> PHY
             { start: "08:30", end: "10:00", task: "⚔️ CYCLE 1 (BIO)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
             { start: "10:00", end: "10:15", task: "☕ BREAK", type: "break", breakdown: [] },
             { start: "10:15", end: "11:45", task: "⚔️ CYCLE 2 (CHEM)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
             { start: "11:45", end: "12:15", task: "💪 WORKOUT + BATH", type: "prep", breakdown: [] },
             { start: "12:15", end: "13:45", task: "⚔️ CYCLE 3 (PHY)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
-            
             { start: "13:45", end: "14:00", task: "🍽️ LUNCH (No Phone)", type: "break", breakdown: [] },
-
-            // ROTATION 2: BIO -> CHEM -> PHY
             { start: "14:00", end: "15:30", task: "⚔️ CYCLE 4 (BIO)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
             { start: "15:30", end: "15:45", task: "☕ BREAK", type: "break", breakdown: [] },
             { start: "15:45", end: "17:15", task: "⚔️ CYCLE 5 (CHEM)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
             { start: "17:15", end: "17:30", task: "☕ BREAK", type: "break", breakdown: [] },
             { start: "17:30", end: "19:00", task: "⚔️ CYCLE 6 (PHY)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
-            
             { start: "19:00", end: "19:15", task: "🍽️ DINNER", type: "break", breakdown: [] },
-
-            // ROTATION 3: BIO -> CHEM -> PHY (Notes)
             { start: "19:15", end: "20:45", task: "⚔️ CYCLE 7 (BIO)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
             { start: "20:45", end: "21:00", task: "☕ BREAK", type: "break", breakdown: [] },
             { start: "21:00", end: "22:30", task: "⚔️ CYCLE 8 (CHEM)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
             { start: "22:30", end: "22:45", task: "☕ BREAK", type: "break", breakdown: [] },
-            
-            // CYCLE 9 (PHY - No Lecture Video, but counts as Phy Slot)
             { start: "22:45", end: "00:15", task: "⚔️ CYCLE 9 (PHY - NOTES)", type: "work", breakdown: ["30 min Revision", "30 min Questions", "30 min Notes"] },
-            
             { start: "00:15", end: "00:45", task: "🧘 COOL DOWN", type: "prep", breakdown: [] },
             { start: "00:45", end: "01:00", task: "😴 PRE-SLEEP HYDRATION", type: "prep", breakdown: [] },
             { start: "01:00", end: "08:00", task: "💤 SLEEP", type: "sleep", breakdown: [] }
