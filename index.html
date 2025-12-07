@@ -15,10 +15,10 @@
             --primary: #d9534f; /* Default War Red */
             --water: #00bcd4; 
             
-            /* Specific Subject Colors for Cards */
-            --bio: #4caf50;    
-            --chem: #2196f3;   
-            --phy: #d9534f;    
+            /* Subject Colors */
+            --bio: #4caf50;    /* Green */
+            --chem: #2196f3;   /* Blue */
+            --phy: #d9534f;    /* Red */
             
             --text: #1c2a38;
             --dim: #5c6c7c;
@@ -88,7 +88,7 @@
         .left-panel { flex: 3; display: flex; flex-direction: column; gap: 15px; height: 100%; overflow: hidden; }
         .right-panel { flex: 2; display: flex; flex-direction: column; gap: 15px; height: 100%; overflow: hidden; }
 
-        /* --- STAR TRAIL EFFECT --- */
+        /* --- STAR TRAIL EFFECT (Restored Speed) --- */
         .star-box { position: relative; overflow: hidden; }
         .star-line { position: absolute; border-radius: 2px; opacity: 0; }
         
@@ -100,7 +100,7 @@
         .star-right { 
             top: 0; right: 0; width: 3px; height: 100%; 
             background: linear-gradient(180deg, transparent 70%, var(--primary)); 
-            animation: animate-right 4s linear infinite;
+            animation: animate-right 4s linear infinite; 
             animation-delay: 1s;
         }
         .star-bottom { 
@@ -151,22 +151,36 @@
         .sub-count { font-size: 1.2rem; font-weight: 900; }
         .bio .sub-name, .bio .sub-count { color: var(--bio); } .chem .sub-name, .chem .sub-count { color: var(--chem); } .phy .sub-name, .phy .sub-count { color: var(--phy); }
         
+        /* RESTORED BAR STYLE */
         .daily-bar-sec { margin-top: 5px; }
         .db-label { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 700; color: var(--dim); margin-bottom: 3px; }
+        .stat-bar-bg { width: 100%; height: 8px; background-color: var(--border); border-radius: 4px; overflow: hidden; }
+        
+        #dailyLecBar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s;
+            border-radius: 4px;
+            /* Reverted to Dark Bar with White Tip */
+            background: linear-gradient(90deg, var(--text) 0%, var(--text) 85%, #ffffff 100%);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+        }
 
         .analytics-box { background-color: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); flex: 0.8; display: flex; flex-direction: column; justify-content: center; }
         .analytics-box h3 { color: var(--text); font-size: 0.9rem; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; }
         .stat-row { margin-bottom: 10px; }
         .stat-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; margin-bottom: 4px; color: var(--dim); }
-        .stat-bar-bg { width: 100%; height: 8px; background-color: var(--border); border-radius: 4px; overflow: hidden; }
+        
         .stat-bar-fill { height: 100%; width: 0%; transition: width 0.5s; border-radius: 4px; }
 
         .neet-detailed-box { 
             background: var(--card-bg); padding: 12px; border-radius: 12px; 
             border: 1px solid var(--border); box-shadow: var(--shadow); 
-            border-top: 4px solid var(--primary); height: 80px;
+            border-top: 4px solid var(--primary); height: 90px;
             display: flex; flex-direction: column; justify-content: center;
         }
+        .neet-main-label { text-align: center; font-size: 0.9rem; font-weight: 900; color: var(--primary); margin-bottom: 5px; letter-spacing: 1px; }
+
         .neet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
         .neet-grid-item { text-align: center; border-right: 1px solid var(--border); }
         .neet-grid-item:last-child { border-right: none; }
@@ -251,11 +265,11 @@
                 <div class="subject-grid">
                     <div class="sub-card bio"><div class="sub-name">BIO</div><div class="sub-count" id="bioCount">0/3</div></div>
                     <div class="sub-card chem"><div class="sub-name">CHEM</div><div class="sub-count" id="chemCount">0/3</div></div>
-                    <div class="sub-card phy"><div class="sub-name">PHY</div><div class="sub-count" id="phyCount">0/2</div></div>
+                    <div class="sub-card phy"><div class="sub-name">PHY</div><div class="sub-count" id="phyCount">0/3</div></div>
                 </div>
                 <div class="daily-bar-sec">
                     <div class="db-label"><span>DAILY PROGRESS</span><span id="dailyLecTxt">0/8</span></div>
-                    <div class="stat-bar-bg"><div class="stat-bar-fill" id="dailyLecBar" style="background-color:var(--text)"></div></div>
+                    <div class="stat-bar-bg"><div id="dailyLecBar"></div></div>
                 </div>
             </div>
 
@@ -278,6 +292,7 @@
 
         <div class="right-panel">
             <div class="neet-detailed-box">
+                <div class="neet-main-label">NEET 2026 (AIIMS)</div>
                 <div class="neet-grid">
                     <div class="neet-grid-item"><span class="ng-val" id="nt-months">00</span><span class="ng-lbl">Months</span></div>
                     <div class="neet-grid-item"><span class="ng-val" id="nt-weeks">00</span><span class="ng-lbl">Weeks</span></div>
@@ -316,26 +331,37 @@
         window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
         installBtn.addEventListener('click', () => { installBtn.style.display = 'none'; deferredPrompt.prompt(); deferredPrompt = null; });
 
-        // --- DATA ---
+        // --- DATA WITH NEW INTERLEAVED SCHEDULE ---
         const schedule = [
             { start: "08:00", end: "08:30", task: "🌅 WAKE UP + HYDRATE", type: "prep", breakdown: [] },
+            
+            // ROTATION 1: BIO -> CHEM -> PHY
             { start: "08:30", end: "10:00", task: "⚔️ CYCLE 1 (BIO)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
             { start: "10:00", end: "10:15", task: "☕ BREAK", type: "break", breakdown: [] },
-            { start: "10:15", end: "11:45", task: "⚔️ CYCLE 2 (BIO)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
+            { start: "10:15", end: "11:45", task: "⚔️ CYCLE 2 (CHEM)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
             { start: "11:45", end: "12:15", task: "💪 WORKOUT + BATH", type: "prep", breakdown: [] },
-            { start: "12:15", end: "13:45", task: "⚔️ CYCLE 3 (BIO)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
+            { start: "12:15", end: "13:45", task: "⚔️ CYCLE 3 (PHY)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
+            
             { start: "13:45", end: "14:00", task: "🍽️ LUNCH (No Phone)", type: "break", breakdown: [] },
-            { start: "14:00", end: "15:30", task: "⚔️ CYCLE 4 (CHEM)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
+
+            // ROTATION 2: BIO -> CHEM -> PHY
+            { start: "14:00", end: "15:30", task: "⚔️ CYCLE 4 (BIO)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
             { start: "15:30", end: "15:45", task: "☕ BREAK", type: "break", breakdown: [] },
             { start: "15:45", end: "17:15", task: "⚔️ CYCLE 5 (CHEM)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
             { start: "17:15", end: "17:30", task: "☕ BREAK", type: "break", breakdown: [] },
-            { start: "17:30", end: "19:00", task: "⚔️ CYCLE 6 (CHEM)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
+            { start: "17:30", end: "19:00", task: "⚔️ CYCLE 6 (PHY)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
+            
             { start: "19:00", end: "19:15", task: "🍽️ DINNER", type: "break", breakdown: [] },
-            { start: "19:15", end: "20:45", task: "⚔️ CYCLE 7 (PHY)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
+
+            // ROTATION 3: BIO -> CHEM -> PHY (Notes)
+            { start: "19:15", end: "20:45", task: "⚔️ CYCLE 7 (BIO)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
             { start: "20:45", end: "21:00", task: "☕ BREAK", type: "break", breakdown: [] },
-            { start: "21:00", end: "22:30", task: "⚔️ CYCLE 8 (PHY)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
+            { start: "21:00", end: "22:30", task: "⚔️ CYCLE 8 (CHEM)", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
             { start: "22:30", end: "22:45", task: "☕ BREAK", type: "break", breakdown: [] },
-            { start: "22:45", end: "00:15", task: "⚔️ CYCLE 9 (NOTES/BACKLOG)", type: "work", breakdown: ["30 min Revision", "30 min Questions", "30 min Notes"] },
+            
+            // CYCLE 9 (PHY - No Lecture Video, but counts as Phy Slot)
+            { start: "22:45", end: "00:15", task: "⚔️ CYCLE 9 (PHY - NOTES)", type: "work", breakdown: ["30 min Revision", "30 min Questions", "30 min Notes"] },
+            
             { start: "00:15", end: "00:45", task: "🧘 COOL DOWN", type: "prep", breakdown: [] },
             { start: "00:45", end: "01:00", task: "😴 PRE-SLEEP HYDRATION", type: "prep", breakdown: [] },
             { start: "01:00", end: "08:00", task: "💤 SLEEP", type: "sleep", breakdown: [] }
@@ -423,13 +449,20 @@
             ctx.lineTo(w, h); ctx.globalAlpha = 1.0; ctx.lineWidth = 3; ctx.shadowBlur = 10; ctx.shadowColor = primary; ctx.stroke();
             ctx.restore();
             
-            ctx.beginPath(); ctx.arc(relativeNow * xPerMin, getY(schedule.find(s=> {
+            // GLOWING DOT (Restored)
+            let currentY = getY(schedule.find(s=> {
                 let sTime = getMinutesFromStart(s.start, s.start.startsWith("0") && parseInt(s.start) < 8);
                 let eTime = getMinutesFromStart(s.end, s.end.startsWith("0") && parseInt(s.end) < 8);
                 if(eTime < sTime) eTime += 1440;
                 return relativeNow >= sTime && relativeNow < eTime;
-            })?.type || 'break'), 4, 0, Math.PI*2);
-            ctx.fillStyle = primary; ctx.fill();
+            })?.type || 'break');
+            
+            ctx.beginPath(); 
+            ctx.arc(relativeNow * xPerMin, currentY, 5, 0, Math.PI*2);
+            ctx.fillStyle = '#ffffff'; 
+            ctx.shadowColor = primary; 
+            ctx.shadowBlur = 15; 
+            ctx.fill();
         }
 
         function startProtocol() { document.getElementById('overlay').style.display = 'none'; if(audioCtx.state === 'suspended') audioCtx.resume(); setInterval(() => { const now = new Date(); updateTimer(now); updateLectureDetailed(now); updateAnalytics(now); updateNeetCounterDetailed(); }, 1000); updateNeetCounterDetailed(); drawGraph(); }
@@ -452,15 +485,12 @@
                     document.getElementById('subTaskName').innerText = subText;
                     if (currentSubIndex !== lastSubTaskIndex && lastSubTaskIndex !== -1) playAlarm(); lastSubTaskIndex = currentSubIndex;
                     
-                    // --- COLOR CHANGE LOGIC ---
                     if (currentTaskIndex !== lastCycleIndex) { 
                         playAlarm(); renderSchedule(currentTaskIndex); 
-                        
                         let newColor = COL_DEF;
                         if(schedule[i].task.includes("BIO")) newColor = COL_BIO;
                         else if(schedule[i].task.includes("CHEM")) newColor = COL_CHEM;
                         else if(schedule[i].task.includes("PHY")) newColor = COL_PHY;
-
                         document.documentElement.style.setProperty('--primary', newColor);
                         drawGraph(); 
                     }
@@ -480,12 +510,18 @@
                 const item = schedule[i]; if(item.type !== 'work') continue;
                 let start = getTodayDate(item.start); let end = getTodayDate(item.end);
                 if (end < start) { if (now >= start) end.setDate(end.getDate() + 1); else if (now < end) start.setDate(start.getDate() - 1); }
-                if (now > end && i < 17) { lecCompletedToday++; if(item.task.includes("BIO")) bio++; else if(item.task.includes("CHEM")) chem++; else if(item.task.includes("PHY")) phy++; }
+                if (now > end && i < 17) { 
+                    if (i < 17) lecCompletedToday++; 
+                    if(item.task.includes("BIO")) bio++; 
+                    else if(item.task.includes("CHEM")) chem++; 
+                    else if(item.task.includes("PHY")) phy++; 
+                }
             }
             const globalDone = (daysPassed * 8) + lecCompletedToday; const remaining = Math.max(0, LEC_TOTAL - globalDone);
             document.getElementById('lecDoneVal').innerText = globalDone; document.getElementById('lecRemVal').innerText = remaining; document.getElementById('lecDaysVal').innerText = Math.ceil(remaining / 8);
-            document.getElementById('bioCount').innerText = `${Math.min(3, bio)}/3`; document.getElementById('chemCount').innerText = `${Math.min(3, chem)}/3`; document.getElementById('phyCount').innerText = `${Math.min(2, phy)}/2`;
-            const pct = Math.min(100, ((bio+chem+phy) / 8) * 100); document.getElementById('dailyLecBar').style.width = pct + "%"; document.getElementById('dailyLecTxt').innerText = `${bio+chem+phy}/8`;
+            document.getElementById('bioCount').innerText = `${Math.min(3, bio)}/3`; document.getElementById('chemCount').innerText = `${Math.min(3, chem)}/3`; document.getElementById('phyCount').innerText = `${Math.min(3, phy)}/3`;
+            const pct = Math.min(100, ((bio+chem+phy) / 9) * 100); 
+            document.getElementById('dailyLecBar').style.width = pct + "%"; document.getElementById('dailyLecTxt').innerText = `${bio+chem+phy}/9`;
         }
 
         function updateAnalytics(now) {
