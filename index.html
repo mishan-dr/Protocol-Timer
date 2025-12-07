@@ -15,7 +15,7 @@
         :root {
             --bg-color: #f0f3f8; 
             --card-bg: #ffffff;
-            --primary: #d9534f; /* Default War Red */
+            --primary: #d9534f; 
             --water: #00bcd4; 
             
             /* Subject Colors */
@@ -43,6 +43,7 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease; }
         
+        /* DESKTOP DEFAULT: Locked Layout */
         body {
             background-color: var(--bg-color);
             color: var(--text);
@@ -51,17 +52,44 @@
             width: 100vw;
             display: flex;
             flex-direction: column;
-            padding: 15px;
-            overflow: hidden; /* No Body Scroll */
+            padding: 10px;
+            overflow: hidden; 
         }
 
-        /* Responsive Fallback: If screen height < 800px, enable body scroll */
-        @media (max-height: 800px), (max-width: 1000px) {
-            body { height: auto; overflow-y: auto; }
-            .container { flex-direction: column; height: auto !important; }
-            .left-panel, .right-panel { height: auto !important; }
-            .schedule-box { height: 400px; }
+        /* MOBILE OVERRIDE: Scrolling Layout */
+        @media (max-width: 1000px) {
+            body { 
+                height: auto; 
+                overflow-y: auto; 
+                display: block; 
+            }
+            .container { 
+                flex-direction: column; 
+                height: auto !important; 
+                display: flex;
+            }
+            .left-panel, .right-panel { 
+                height: auto !important; 
+                width: 100%; 
+                margin-bottom: 15px;
+            }
+            .dashboard-head { min-height: 220px; }
+            .schedule-box { height: 400px; } /* Fixed height for mobile scroll inside box */
+            .quote-box { display: none; } 
         }
+
+        /* --- LAYOUT --- */
+        .container { 
+            display: flex; 
+            width: 100%; 
+            height: 100%; 
+            gap: 10px; 
+            margin: 0 auto;
+            max-width: 1600px;
+        }
+        /* Min-height: 0 is essential for nested flex scrolling */
+        .left-panel { flex: 3; display: flex; flex-direction: column; gap: 10px; height: 100%; min-height: 0; }
+        .right-panel { flex: 2; display: flex; flex-direction: column; gap: 10px; height: 100%; min-height: 0; }
 
         /* --- SNOWFALL --- */
         #snowfall-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; opacity: 0.8; }
@@ -71,24 +99,11 @@
         /* --- CONTROLS --- */
         .controls-container { position: fixed; top: 10px; right: 10px; display: flex; gap: 8px; z-index: 1100; }
         .control-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 5px; border-radius: 50%; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: var(--shadow); font-size: 1rem; }
-        .install-btn { display: none; background: var(--primary); color: white; border: none; font-weight: bold; border-radius: 15px; padding: 0 10px; width: auto; font-size: 0.7rem; }
-
+        
         /* --- OVERLAY --- */
         #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); display: flex; justify-content: center; align-items: center; flex-direction: column; z-index: 1000; }
         #overlay h1 { font-size: 2rem; color: var(--primary); margin-bottom: 20px; font-weight: 900; }
         #overlay button { padding: 12px 30px; font-size: 1rem; font-weight: 700; color: white; background-color: var(--primary); border: none; border-radius: 50px; cursor: pointer; }
-
-        /* --- MAIN LAYOUT --- */
-        .container { 
-            display: flex; 
-            width: 100%; 
-            height: 100%; /* Fill the locked body */
-            gap: 15px; 
-            margin: 0 auto;
-            max-width: 1600px;
-        }
-        .left-panel { flex: 3; display: flex; flex-direction: column; gap: 15px; height: 100%; overflow: hidden; }
-        .right-panel { flex: 2; display: flex; flex-direction: column; gap: 15px; height: 100%; overflow: hidden; }
 
         /* --- STAR TRAIL (UNIFORM SPEED) --- */
         .star-box { position: relative; overflow: hidden; }
@@ -123,7 +138,7 @@
         @keyframes animate-bottom { 0% { right: -100%; opacity: 1; } 50% { right: 100%; opacity: 1; } 51%, 100% { right: 100%; opacity: 0; } }
         @keyframes animate-left { 0% { bottom: -100%; opacity: 1; } 50% { bottom: 100%; opacity: 1; } 51%, 100% { bottom: 100%; opacity: 0; } }
 
-        /* --- LEFT PANEL WIDGETS --- */
+        /* --- WIDGETS --- */
         .dashboard-head { 
             background-color: var(--card-bg); padding: 15px; border-radius: 12px; 
             box-shadow: var(--shadow); text-align: center; border-top: 4px solid var(--primary); 
@@ -145,16 +160,17 @@
         .lec-command-box { 
             background-color: var(--card-bg); padding: 15px; border-radius: 12px; 
             box-shadow: var(--shadow); border: 1px solid var(--border); 
-            flex: 1; display: flex; flex-direction: column; justify-content: space-between;
-            min-height: 180px;
+            flex: 1; /* Allow growing */
+            min-height: 0; /* ALLOW SHRINKING FOR SCROLLBAR */
+            display: flex; flex-direction: column; justify-content: space-between;
         }
         .lec-header { font-size: 0.9rem; font-weight: 800; color: var(--text); text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; }
         .lec-global-stats { display: flex; justify-content: space-between; margin-bottom: 10px; background: var(--bg-color); padding: 8px; border-radius: 8px; }
         .lg-item { text-align: center; flex: 1; }
-        .lg-val { display: block; font-size: 1.5rem; font-weight: 900; line-height: 1; color: var(--text); }
+        .lg-val { display: block; font-size: 1.4rem; font-weight: 900; line-height: 1; color: var(--text); }
         .lg-lbl { font-size: 0.6rem; font-weight: 700; color: var(--dim); text-transform: uppercase; margin-top: 2px; }
 
-        .subject-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .subject-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 5px; }
         .sub-card { background: var(--bg-color); padding: 8px; border-radius: 8px; text-align: center; border: 1px solid var(--border); }
         .sub-name { font-size: 0.7rem; font-weight: 800; margin-bottom: 2px; }
         .sub-count { font-size: 1.2rem; font-weight: 900; }
@@ -164,7 +180,7 @@
         .db-label { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 700; color: var(--dim); margin-bottom: 3px; }
         .stat-bar-bg { width: 100%; height: 8px; background-color: var(--border); border-radius: 4px; overflow: hidden; }
         
-        /* RESTORED SINGLE WHITE TIP */
+        /* RESTORED SINGLE WHITE TIP STYLE */
         #dailyLecBar {
             height: 100%;
             width: 0%;
@@ -177,16 +193,15 @@
         .analytics-box { 
             background-color: var(--card-bg); padding: 15px; border-radius: 12px; 
             box-shadow: var(--shadow); border: 1px solid var(--border); 
-            flex: 0 0 auto; 
+            flex: 0.8; display: flex; flex-direction: column; justify-content: center;
             min-height: 160px;
-            display: flex; flex-direction: column; justify-content: center; 
         }
         .analytics-box h3 { color: var(--text); font-size: 0.9rem; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; }
         .stat-row { margin-bottom: 8px; }
         .stat-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; margin-bottom: 4px; color: var(--dim); }
         .stat-bar-fill { height: 100%; width: 0%; transition: width 0.5s; border-radius: 4px; }
 
-        /* --- RIGHT PANEL WIDGETS --- */
+        /* 2. RIGHT PANEL WIDGETS */
         .neet-detailed-box { 
             background: var(--card-bg); padding: 12px; border-radius: 12px; 
             border: 1px solid var(--border); box-shadow: var(--shadow); 
@@ -204,18 +219,15 @@
         .schedule-box { 
             background-color: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow); 
             display: flex; flex-direction: column; border: 1px solid var(--border); overflow: hidden; 
-            flex: 2; min-height: 200px;
+            flex: 2; /* Main grower */
+            min-height: 0; /* CRITICAL FOR FLEX SCROLL */
         }
         .schedule-header { padding: 10px 15px; background: var(--bg-color); border-bottom: 1px solid var(--border); font-weight: 800; color: var(--text); font-size: 0.85rem; flex-shrink: 0; }
-        
-        .schedule-list { 
-            padding: 0; overflow-y: auto; flex: 1; display: flex; flex-direction: column; 
-        }
+        .schedule-list { padding: 0; overflow-y: auto; flex: 1; display: flex; flex-direction: column; }
         .schedule-list::-webkit-scrollbar { width: 5px; }
         .schedule-list::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 5px; }
 
         .schedule-item { display: flex; justify-content: space-between; padding: 8px 15px; border-bottom: 1px solid var(--border); color: var(--dim); font-size: 0.8rem; }
-        
         .schedule-item.active { background-color: var(--card-bg); border-left: 4px solid var(--primary); color: var(--text); font-weight: 700; font-size: 0.85rem; order: -1; }
         .schedule-item.completed { opacity: 0.5; background: rgba(0,0,0,0.02); order: 100; }
         .schedule-divider { text-align: center; font-size: 0.65rem; color: var(--dim); padding: 4px; background: var(--bg-color); font-weight: 700; border-bottom:1px solid var(--border); order: 99;}
@@ -224,14 +236,15 @@
         .widget-box { 
             background-color: var(--card-bg); padding: 12px; border-radius: 8px; 
             box-shadow: var(--shadow); border: 1px solid var(--border); 
-            flex: 1; display: flex; flex-direction: column; min-height: 120px; overflow: hidden;
+            flex: 1; display: flex; flex-direction: column; 
+            min-height: 0; /* CRITICAL FOR FLEX SCROLL */
         }
         .widget-box h3 { color: var(--primary); font-size: 0.85rem; margin-bottom: 8px; font-weight: 800; flex-shrink: 0;}
         
+        /* ENABLE INTERNAL SCROLLING FOR WATER */
         .water-list { list-style: none; font-size: 0.75rem; overflow-y: auto; flex: 1; display: flex; flex-direction: column;}
         .water-list::-webkit-scrollbar { width: 5px; }
         .water-list::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 5px; }
-
         .water-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed var(--border); color: var(--text); order: 0;}
         .water-item.done { text-decoration: line-through; opacity: 0.4; order: 100; } 
 
@@ -258,7 +271,6 @@
     <div id="snowfall-layer"></div>
     
     <div class="controls-container">
-        <button class="control-btn install-btn" id="installBtn">📲</button>
         <button class="control-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
     </div>
 
@@ -294,7 +306,7 @@
                 <div class="subject-grid">
                     <div class="sub-card bio"><div class="sub-name">BIO</div><div class="sub-count" id="bioCount">0/3</div></div>
                     <div class="sub-card chem"><div class="sub-name">CHEM</div><div class="sub-count" id="chemCount">0/3</div></div>
-                    <div class="sub-card phy"><div class="sub-name">PHY</div><div class="sub-count" id="phyCount">0/2</div></div>
+                    <div class="sub-card phy"><div class="sub-name">PHY</div><div class="sub-count" id="phyCount">0/3</div></div>
                 </div>
                 <div class="daily-bar-sec">
                     <div class="db-label"><span>DAILY PROGRESS</span><span id="dailyLecTxt">0/8</span></div>
@@ -356,9 +368,6 @@
         const manifest = { "name": "AIIMS WAR PROTOCOL", "short_name": "AIIMS WAR", "start_url": ".", "display": "standalone", "background_color": "#d9534f", "theme_color": "#d9534f", "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/2913/2913465.png", "sizes": "192x192", "type": "image/png" }] };
         const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
         const link = document.createElement('link'); link.rel = 'manifest'; link.href = URL.createObjectURL(blob); document.head.appendChild(link);
-        let deferredPrompt; const installBtn = document.getElementById('installBtn');
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block'; });
-        installBtn.addEventListener('click', () => { installBtn.style.display = 'none'; deferredPrompt.prompt(); deferredPrompt = null; });
 
         // --- DATA ---
         const schedule = [
@@ -537,9 +546,9 @@
             }
             const globalDone = (daysPassed * 8) + lecCompletedToday; const remaining = Math.max(0, LEC_TOTAL - globalDone);
             document.getElementById('lecDoneVal').innerText = globalDone; document.getElementById('lecRemVal').innerText = remaining; document.getElementById('lecDaysVal').innerText = Math.ceil(remaining / 8);
-            document.getElementById('bioCount').innerText = `${Math.min(3, bio)}/3`; document.getElementById('chemCount').innerText = `${Math.min(3, chem)}/3`; document.getElementById('phyCount').innerText = `${Math.min(2, phy)}/2`;
-            const pct = Math.min(100, ((bio+chem+phy) / 8) * 100); 
-            document.getElementById('dailyLecBar').style.width = pct + "%"; document.getElementById('dailyLecTxt').innerText = `${bio+chem+phy}/8`;
+            document.getElementById('bioCount').innerText = `${Math.min(3, bio)}/3`; document.getElementById('chemCount').innerText = `${Math.min(3, chem)}/3`; document.getElementById('phyCount').innerText = `${Math.min(3, phy)}/3`;
+            const pct = Math.min(100, ((bio+chem+phy) / 9) * 100); 
+            document.getElementById('dailyLecBar').style.width = pct + "%"; document.getElementById('dailyLecTxt').innerText = `${bio+chem+phy}/9`;
         }
 
         function updateAnalytics(now) {
