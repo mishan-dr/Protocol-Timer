@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ AIIMS WAR PROTOCOL - EXECUTION MODE</title>
+    <title>⚡ AIIMS WAR PROTOCOL - SNIPER MODE</title>
     
     <meta name="theme-color" content="#d9534f">
     <link rel="manifest" href="manifest.json">
@@ -27,7 +27,6 @@
             --lec-color: #2196f3;
         }
 
-        /* --- DARK MODE VARIABLES --- */
         body.dark-mode {
             --bg-color: #121212;
             --card-bg: #1e1e1e;
@@ -42,12 +41,7 @@
 
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
 
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s; 
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: all 0.3s; }
         
         body {
             background-color: var(--bg-color);
@@ -56,70 +50,56 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden; /* Hide horizontal scroll from snowfall */
         }
 
-        /* --- Theme Toggle --- */
-        .theme-toggle {
-            position: fixed; top: 15px; right: 15px;
-            background: var(--card-bg); 
-            border: 1px solid var(--border);
-            color: var(--text); 
-            padding: 10px;
+        /* --- SNOWFALL EFFECT CSS --- */
+        #snowfall-layer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.8;
+            overflow: hidden;
+        }
+        .snowflake {
+            position: absolute;
+            width: 3px; height: 3px;
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 50%;
-            width: 40px; height: 40px;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; z-index: 1100; box-shadow: var(--shadow);
-            font-size: 1.2rem;
+            box-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-10vh) translateX(0); opacity: 0; }
+            5% { opacity: 0.9; }
+            95% { opacity: 0.9; }
+            100% { transform: translateY(100vh) translateX(var(--drift)); opacity: 0; }
         }
 
-        /* --- Overlay --- */
-        #overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color); display: flex; justify-content: center; align-items: center;
-            flex-direction: column; z-index: 1000; cursor: pointer;
-        }
+        /* --- LAYOUT AND WIDGETS --- */
+        .theme-toggle { position: fixed; top: 15px; right: 15px; background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 1100; box-shadow: var(--shadow); font-size: 1.2rem; }
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); display: flex; justify-content: center; align-items: center; flex-direction: column; z-index: 1000; cursor: pointer; }
         #overlay h1 { font-size: 2.2rem; color: var(--primary); margin-bottom: 20px; font-weight: 900; letter-spacing: -1px; }
-        #overlay button {
-            padding: 15px 40px; font-size: 1.2rem; font-weight: 700;
-            color: white; background-color: var(--primary); border: none;
-            border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(217, 83, 79, 0.4);
-        }
+        #overlay button { padding: 15px 40px; font-size: 1.2rem; font-weight: 700; color: white; background-color: var(--primary); border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(217, 83, 79, 0.4); }
 
-        /* --- Layout --- */
-        .container {
-            display: flex; max-width: 1400px; margin: 25px auto; width: 96%; gap: 20px;
-        }
+        .container { display: flex; max-width: 1400px; margin: 25px auto; width: 96%; gap: 20px; flex: 1; }
         .left-panel { flex: 3; display: flex; flex-direction: column; gap: 20px; }
         .right-panel { flex: 2; display: flex; flex-direction: column; gap: 20px; }
 
-        /* --- Dashboard Head --- */
-        .dashboard-head {
-            background-color: var(--card-bg); padding: 25px;
-            border-radius: 12px; box-shadow: var(--shadow);
-            text-align: center; border-top: 5px solid var(--primary);
-            position: relative; overflow: hidden;
-        }
-        .protocol-title { 
-            font-size: 0.9rem; font-weight: 800; color: var(--primary); 
-            letter-spacing: 2px; margin-bottom: 5px; text-transform: uppercase;
-        }
+        /* DASHBOARD HEAD */
+        .dashboard-head { background-color: var(--card-bg); padding: 25px; border-radius: 12px; box-shadow: var(--shadow); text-align: center; border-top: 5px solid var(--primary); }
+        .protocol-title { font-size: 0.9rem; font-weight: 800; color: var(--primary); letter-spacing: 2px; margin-bottom: 5px; text-transform: uppercase; }
         .countdown { font-size: 5rem; font-weight: 900; color: var(--text); line-height: 0.9; margin: 10px 0; letter-spacing: -2px;}
         .current-task-main { font-size: 1.6rem; font-weight: 700; color: var(--dim); margin: 0 0 20px; text-transform: uppercase; }
         
-        .sub-task-timer { 
-            padding: 12px; background-color: rgba(0,0,0,0.03); border-radius: 8px; 
-            font-size: 1.1rem; font-weight: 500; color: var(--text); margin-bottom: 20px;
-            border-left: 4px solid var(--primary); text-align: left;
-        }
+        .sub-task-timer { padding: 12px; background-color: rgba(0,0,0,0.03); border-radius: 8px; font-size: 1.1rem; font-weight: 500; color: var(--text); margin-bottom: 20px; border-left: 4px solid var(--primary); text-align: left; }
         .sub-task-timer strong { color: var(--primary); }
 
-        /* --- Status Bar (Water & Counters) --- */
-        .status-bar-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-            padding-top: 20px; border-top: 1px solid var(--border);
-        }
-        
-        /* Water HUD */
+        /* HUD - SWAPPED */
+        .status-bar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
         .mini-water-hud { text-align: left; padding-right: 10px; border-right: 1px solid var(--border); }
         .hud-row { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; color: var(--dim); margin-bottom: 6px; }
         .water-val { color: var(--water); font-weight: 800; font-size: 1.1rem; }
@@ -127,84 +107,52 @@
         .progress-bar-fill { height: 100%; background-color: var(--water); width: 0%; transition: width 0.5s ease; }
         .next-sip-alert { font-size: 0.8rem; color: var(--text); font-weight: 500; }
 
-        /* NEET Counter */
-        .neet-counter-integrated h4 { font-size: 0.8rem; color: var(--dim); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;}
+        /* LECTURE COUNTER INTEGRATED (NEW POSITION) */
+        .lec-counter-integrated h4 { font-size: 0.8rem; color: var(--dim); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;}
         .counter-grid-mini { display: flex; justify-content: center; gap: 30px; }
-        .counter-value { font-size: 2rem; font-weight: 900; color: var(--primary); line-height: 1; }
+        .counter-value { font-size: 2rem; font-weight: 900; color: var(--lec-color); line-height: 1; }
         .counter-label { font-size: 0.7rem; color: var(--dim); text-transform: uppercase; margin-top: 5px; font-weight: 600; }
 
-        /* --- Analytics Widget (NEW) --- */
-        .analytics-box {
-            background-color: var(--card-bg); padding: 20px; border-radius: 12px;
-            box-shadow: var(--shadow); border: 1px solid var(--border);
-        }
-        .analytics-box h3 {
-            color: var(--text); font-size: 1rem; margin-bottom: 15px;
-            font-weight: 800; text-transform: uppercase; display: flex; justify-content: space-between;
-        }
+        /* NEET COUNTER (NEW POSITION) */
+        .neet-counter-box { background-color: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); text-align: center; }
+        .neet-counter-box h3 { font-size: 0.9rem; color: var(--dim); margin-bottom: 15px; font-weight: 800; text-transform: uppercase; }
+        .neet-main-display { font-size: 3rem; font-weight: 900; color: var(--primary); line-height: 1; }
+        .neet-sub { font-size: 0.9rem; color: var(--dim); margin-bottom: 10px; }
+        .neet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .neet-item { background: var(--bg-color); padding: 10px; border-radius: 8px; }
+
+        /* ANALYTICS */
+        .analytics-box { background-color: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .analytics-box h3 { color: var(--text); font-size: 1rem; margin-bottom: 15px; font-weight: 800; text-transform: uppercase; }
         .stat-row { margin-bottom: 12px; }
         .stat-header { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; color: var(--dim); }
         .stat-bar-bg { width: 100%; height: 8px; background-color: var(--border); border-radius: 4px; overflow: hidden; }
         .stat-bar-fill { height: 100%; width: 0%; transition: width 0.5s; }
-        
-        .c-rev { background-color: var(--rev-color); }
-        .c-ques { background-color: var(--ques-color); }
-        .c-lec { background-color: var(--lec-color); }
-        
-        .stat-val { color: var(--text); font-weight: 800; }
 
-        /* --- Standard Widgets --- */
-        .widget-box { 
-            background-color: var(--card-bg); padding: 15px; border-radius: 8px; 
-            box-shadow: var(--shadow); border: 1px solid var(--border);
-        }
-        .widget-box h3 { 
-            color: var(--primary); font-size: 0.9rem; margin-bottom: 10px; 
-            text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 5px;
-            font-weight: 800;
-        }
+        /* ROLLER SCHEDULE */
+        .schedule-box { background-color: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow); flex: 1; display: flex; flex-direction: column; border: 1px solid var(--border); overflow: hidden; max-height: 600px; }
+        .schedule-header { padding: 15px; background: var(--bg-color); border-bottom: 1px solid var(--border); font-weight: 800; color: var(--text); }
+        .schedule-list { padding: 0; overflow-y: auto; flex: 1; scroll-behavior: smooth; }
+        .schedule-item { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid var(--border); color: var(--dim); font-size: 0.95rem; }
+        .schedule-item.active { background-color: var(--card-bg); border-left: 5px solid var(--primary); color: var(--text); font-weight: 700; position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .schedule-item.completed { background-color: rgba(0,0,0,0.02); color: var(--dim); font-size: 0.85rem; opacity: 0.6; border-left: 3px solid var(--dim); }
+        .history-divider { text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--dim); padding: 10px; background: var(--bg-color); letter-spacing: 2px; border-top: 2px dashed var(--border); border-bottom: 1px solid var(--border); }
 
-        /* Water List */
-        .water-list { list-style: none; font-size: 0.85rem; max-height: 180px; overflow-y: auto; }
+        .time-col { font-weight: 700; min-width: 90px; }
+        .task-col { flex: 1; text-align: left; }
+
+        /* WATER WIDGET */
+        .widget-box { background-color: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .widget-box h3 { color: var(--primary); font-size: 0.9rem; margin-bottom: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 5px; font-weight: 800; }
+        .water-list { list-style: none; font-size: 0.85rem; max-height: 150px; overflow-y: auto; }
         .water-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--border); color: var(--text); }
         .water-item span:last-child { color: var(--water); font-weight: 700; }
         .water-item.done { text-decoration: line-through; opacity: 0.4; }
 
-        /* Schedule List */
-        .schedule-box { 
-            background-color: var(--card-bg); padding: 0; border-radius: 12px; 
-            box-shadow: var(--shadow); flex: 1; min-height: 400px; display: flex; 
-            flex-direction: column; border: 1px solid var(--border); overflow: hidden;
-        }
-        .schedule-header { padding: 15px; background: var(--bg-color); border-bottom: 1px solid var(--border); font-weight: 800; color: var(--text); }
-        .schedule-list { padding: 10px 15px; overflow-y: auto; flex: 1; }
-        .schedule-item { 
-            display: flex; justify-content: space-between; padding: 12px 0; 
-            border-bottom: 1px solid var(--border); color: var(--dim); font-size: 0.9rem;
-        }
-        .schedule-item.active { 
-            background-color: rgba(217, 83, 79, 0.08); 
-            color: var(--primary); font-weight: 700; border-radius: 6px; 
-            padding: 12px 10px; margin: 0 -10px; border-bottom: none;
-        }
-        .time-col { font-weight: 700; min-width: 90px; font-variant-numeric: tabular-nums; }
-        .task-col { flex: 1; text-align: left; margin-left: 10px; }
-        .schedule-item.completed { opacity: 0.4; }
-
-        /* Music Player */
-        .music-player { background-color: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: var(--shadow); border: 1px solid var(--border); }
-        .file-label { 
-            display: block; background-color: var(--dim); color: white; 
-            padding: 8px; border-radius: 4px; cursor: pointer; text-align: center; 
-            font-size: 0.8rem; font-weight: 600; margin-bottom: 10px;
-        }
-        audio { width: 100%; height: 30px; }
-
-        /* Footer */
-        .footer { padding: 20px; text-align: center; font-size: 0.85rem; color: var(--dim); margin-top: auto; font-weight: 500; }
+        .footer { padding: 20px; text-align: center; font-size: 0.8rem; color: var(--dim); margin-top: auto; }
 
         @media (max-width: 900px) {
-            .container { flex-direction: column; margin: 10px auto; width: 95%; }
+            .container { flex-direction: column; }
             .status-bar-grid { grid-template-columns: 1fr; }
             .mini-water-hud { border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
             .countdown { font-size: 4rem; }
@@ -214,12 +162,13 @@
 <body>
 
     <audio id="alarmSound" preload="auto"></audio>
+    <div id="snowfall-layer"></div>
     <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
 
     <div id="overlay">
-        <h1>🦁 AIIMS WAR PROTOCOL</h1>
-        <button onclick="startProtocol()">INITIATE WAR MODE</button>
-        <p style="margin-top:20px; color:var(--dim); font-size:0.9rem;">3.5L Hydration • 9 Cycles • 13.5h Focus</p>
+        <h1>🦁 WAR PROTOCOL</h1>
+        <button onclick="startProtocol()">INITIATE SNIPER MODE</button>
+        <p style="margin-top:20px; color:var(--dim); font-size:0.9rem;">624 Lectures • 8/Day • Target: Feb 23</p>
     </div>
 
     <div class="container">
@@ -230,35 +179,35 @@
                 <div class="countdown" id="timer">00:00:00</div>
                 
                 <div class="sub-task-timer" id="subTaskContainer">
-                    <strong>MICRO-TASK:</strong> <span id="subTaskName">Initializing...</span>
+                    <strong>TARGET:</strong> <span id="subTaskName">Initializing...</span>
                 </div>
 
                 <div class="status-bar-grid">
                     <div class="mini-water-hud">
                         <div class="hud-row">
-                            <span>💧 HYDRATION LEVEL</span>
+                            <span>💧 HYDRATION</span>
                             <span class="water-val" id="hudConsumed">0 ml</span>
                         </div>
                         <div class="progress-bar-bg">
                             <div class="progress-bar-fill" id="hudBar"></div>
                         </div>
                         <div class="hud-row" style="margin-top:5px; font-size:0.75rem;">
-                            <span id="hudTarget">Target: 3.5L</span>
+                            <span id="hudTarget">Goal: 3.5L</span>
                             <span id="hudPercent">0%</span>
                         </div>
                         <div class="next-sip-alert" id="hudNext">Next: Loading...</div>
                     </div>
 
-                    <div class="neet-counter-integrated">
-                        <h4>NEET COUNTDOWN</h4>
+                    <div class="lec-counter-integrated">
+                        <h4>🎯 LECTURES REMAINING</h4>
                         <div class="counter-grid-mini">
-                            <div class="counter-item">
-                                <div class="counter-value" id="daysCount">000</div>
-                                <div class="counter-label">Days</div>
+                            <div class="counter-item" style="flex-direction: column;">
+                                <div class="counter-value" id="lecRemaining" style="color:var(--lec-color)">624</div>
+                                <div class="counter-label">Lectures</div>
                             </div>
-                            <div class="counter-item">
-                                <div class="counter-value" id="hoursCount">00</div>
-                                <div class="counter-label">Hours</div>
+                            <div class="counter-item" style="flex-direction: column;">
+                                <div class="counter-value" id="lecDate" style="color:var(--water); font-size:1.8rem;">Feb 23</div>
+                                <div class="counter-label">Target Date</div>
                             </div>
                         </div>
                     </div>
@@ -266,55 +215,53 @@
             </div>
 
             <div class="analytics-box">
-                <h3>📊 War Room Analytics <span style="font-size:0.7rem; opacity:0.6; align-self:center;">LIVE TRACKING</span></h3>
-                
+                <h3>📊 Daily Metrics</h3>
                 <div class="stat-row">
-                    <div class="stat-header">
-                        <span style="color:var(--rev-color)">REVISION</span>
-                        <span class="stat-val" id="valRev">0 / 225m</span>
-                    </div>
+                    <div class="stat-header"><span style="color:var(--rev-color)">REVISION</span><span class="stat-val" id="valRev">0/225m</span></div>
                     <div class="stat-bar-bg"><div class="stat-bar-fill c-rev" id="barRev"></div></div>
                 </div>
-
                 <div class="stat-row">
-                    <div class="stat-header">
-                        <span style="color:var(--ques-color)">QUESTIONS</span>
-                        <span class="stat-val" id="valQues">0 / 180m</span>
-                    </div>
+                    <div class="stat-header"><span style="color:var(--ques-color)">QUESTIONS</span><span class="stat-val" id="valQues">0/180m</span></div>
                     <div class="stat-bar-bg"><div class="stat-bar-fill c-ques" id="barQues"></div></div>
                 </div>
-
                 <div class="stat-row">
-                    <div class="stat-header">
-                        <span style="color:var(--lec-color)">LECTURES</span>
-                        <span class="stat-val" id="valLec">0 / 405m</span>
-                    </div>
+                    <div class="stat-header"><span style="color:var(--lec-color)">LECTURES</span><span class="stat-val" id="valLec">0/405m</span></div>
                     <div class="stat-bar-bg"><div class="stat-bar-fill c-lec" id="barLec"></div></div>
                 </div>
             </div>
 
             <div class="widget-box">
-                <h3>🚰 Hydration Log (3.5L Total)</h3>
+                <h3>🚰 Hydration Log</h3>
                 <ul class="water-list" id="fullWaterList"></ul>
-            </div>
-            
-            <div class="widget-box" style="border-left: 4px solid var(--primary);">
-                <blockquote id="motivationQuote" style="font-style:italic; font-size:0.95rem; line-height:1.4;">"Pain is temporary. AIIMS is forever."</blockquote>
             </div>
         </div>
 
         <div class="right-panel">
+
+            <div class="neet-counter-box">
+                <div class="neet-sub">NEET 2026 - FINAL CLOCK</div>
+                <div class="neet-main-display" id="daysCount">000</div>
+                <div class="lec-label" style="margin-bottom:15px; font-size:0.9rem;">DAYS REMAINING</div>
+                
+                <div class="neet-grid">
+                    <div class="neet-item">
+                        <div class="lec-val" id="hoursCount" style="color:var(--primary)">00</div>
+                        <div class="lec-label">HOURS</div>
+                    </div>
+                    <div class="neet-item">
+                        <div class="lec-val" id="neetTargetDate" style="font-size:1.1rem; line-height:1.8rem;">May 4, 2026</div>
+                        <div class="lec-label">EXAM DATE</div>
+                    </div>
+                </div>
+            </div>
+
             <div class="schedule-box">
-                <div class="schedule-header">TIMETABLE COMMANDER</div>
+                <div class="schedule-header">MISSION FEED</div>
                 <div class="schedule-list" id="scheduleList"></div>
             </div>
 
-            <div class="music-player">
-                <h3>🎧 Audio Focus</h3>
-                <label for="fileInput" class="file-label">📂 Load White Noise / Beats</label>
-                <input type="file" id="fileInput" multiple accept="audio/*" style="display:none;">
-                <audio id="musicPlayer" controls loop></audio>
-                <div id="trackName" style="margin-top:5px; font-size:0.8rem; color:var(--dim); text-align:center;">No track loaded.</div>
+            <div class="widget-box" style="border-left: 4px solid var(--primary);">
+                <blockquote id="motivationQuote" style="font-style:italic; font-size:0.95rem; line-height:1.4;">"Momentum is built through consistency. Win the day, every day."</blockquote>
             </div>
         </div>
     </div>
@@ -324,9 +271,7 @@
     </div>
 
     <script>
-        // --- 1. MASTER DATA ---
-        // 9 Cycles. 13.5 hours work. 3.5L Water.
-        
+        // --- 1. CONFIGURATION ---
         const schedule = [
             { start: "08:00", end: "08:30", task: "🌅 WAKE UP + HYDRATE", type: "prep", breakdown: [] },
             { start: "08:30", end: "10:00", task: "⚔️ CYCLE 1", type: "work", breakdown: ["25 min Revision", "20 min Questions", "45 min Lecture"] },
@@ -352,53 +297,48 @@
         ];
 
         const waterPlan = [
-            { time: "08:00", ml: 400, note: "Wake Up Flush" },
-            { time: "10:00", ml: 250, note: "Post-Cycle 1" },
-            { time: "11:45", ml: 300, note: "Pre-Workout" },
-            { time: "13:45", ml: 400, note: "Lunch Hydration" },
-            { time: "15:30", ml: 300, note: "Post-Cycle 4" },
-            { time: "17:15", ml: 250, note: "Post-Cycle 5" },
-            { time: "19:00", ml: 400, note: "Dinner Hydration" },
-            { time: "20:45", ml: 300, note: "Post-Cycle 7" },
-            { time: "22:30", ml: 300, note: "Post-Cycle 8" },
-            { time: "00:15", ml: 200, note: "Cool Down Sip" },
+            { time: "08:00", ml: 400, note: "Wake Up Flush" }, { time: "10:00", ml: 250, note: "Post-Cycle 1" },
+            { time: "11:45", ml: 300, note: "Pre-Workout" }, { time: "13:45", ml: 400, note: "Lunch Hydration" },
+            { time: "15:30", ml: 300, note: "Post-Cycle 4" }, { time: "17:15", ml: 250, note: "Post-Cycle 5" },
+            { time: "19:00", ml: 400, note: "Dinner Hydration" }, { time: "20:45", ml: 300, note: "Post-Cycle 7" },
+            { time: "22:30", ml: 300, note: "Post-Cycle 8" }, { time: "00:15", ml: 200, note: "Cool Down Sip" },
             { time: "00:45", ml: 400, note: "Night Recovery" }
         ];
         
-        // Target: May 4, 2026. 
         const NEET_TARGET_DATE = new Date('May 4, 2026 14:00:00'); 
+        
+        // --- LECTURE CONFIG ---
+        const LEC_TOTAL = 624;
+        const LEC_RATE = 8;
+        const LEC_START_DATE = new Date('2025-12-07T00:00:00'); // Assuming start of protocol is Dec 7, 2025
+        const LEC_FINISH_DATE_SNOW = new Date('February 24, 2026'); // Snowfall stops the day after the target
+
         const quotes = [
-            "You are becoming the person who deserves AIIMS.",
-            "Identity hardens when focus becomes default.",
-            "Others will study. You will dominate.",
-            "Physics will start clicking. Biology will become reflex.",
-            "Your water is a weapon. Your time is ammo.",
-            "9 Cycles. 13.5 Hours. No excuses.",
-            "The pain of discipline is far less than the pain of regret.",
-            "Your batchmates are sleeping. Keep grinding.",
-            "Don't stop when you're tired. Stop when you're done."
+            "Momentum is built through consistency. Win the day, every day.",
+            "The secret to Top 10 is not magic, it's the daily execution you refuse to skip.",
+            "Everyone is distracted. The few who are not, win the future.",
+            "This is the Easiest Step: Just Do It. The compound effort makes the result Easy.",
+            "Your future AIIMS badge is forged in this moment of quiet, focused work.",
+            "Consistency over intensity. Show up. Do the cycles. Repeat.",
+            "The only way to fail is to stop moving. Maintain the forward thrust.",
+            "When others procrastinate, you execute. That is the leverage.",
+            "The 1% daily improvement is the cheat code to success."
         ];
         const TOTAL_WATER_ML = 3500; 
-        
-        // --- 2. GLOBAL STATE ---
+
+        // Global State
         let lastSeconds = -1;
         let lastCycleIndex = -1;
         let lastSubTaskIndex = -1;
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const musicPlayer = document.getElementById('musicPlayer');
-        const fileInput = document.getElementById('fileInput');
         
-        // Analytics Totals (Calculated from schedule)
-        let totalRevTarget = 0;
-        let totalQuesTarget = 0;
-        let totalLecTarget = 0;
+        let totalRevTarget = 0, totalQuesTarget = 0, totalLecTarget = 0;
 
-        // --- 3. INIT ---
         window.addEventListener('DOMContentLoaded', () => {
             const isDark = localStorage.getItem('theme') === 'dark';
             if(isDark) document.body.classList.add('dark-mode');
             
-            // Calculate Targets
+            // Calculate Analytics Targets
             schedule.forEach(s => {
                 if(s.type === 'work' && s.breakdown.length) {
                     s.breakdown.forEach(b => {
@@ -410,6 +350,8 @@
             });
 
             renderWaterList();
+            updateLectureWidget();
+            startSnowfall(); // Initialize snowfall check
             document.getElementById('motivationQuote').innerText = quotes[Math.floor(Math.random()*quotes.length)];
         });
 
@@ -423,15 +365,17 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
             
             updateNeetCounter();
-            updateTimer(); // Triggers analytics update too
+            updateTimer(); 
             updateWaterHUD();
             
             setInterval(updateTimer, 1000);
             setInterval(updateNeetCounter, 60000);
             setInterval(updateWaterHUD, 60000);
+            setInterval(updateLectureWidget, 60 * 60000); // Check lectures every hour
         }
 
-        // --- 4. TIME & SCHEDULE ---
+        // --- CORE UTILS ---
+
         function getTodayDate(timeStr) {
             const now = new Date();
             const [hours, minutes] = timeStr.split(':').map(Number);
@@ -446,251 +390,243 @@
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
 
+        // --- LECTURE LOGIC ---
+        function updateLectureWidget() {
+            const now = new Date();
+            const startOfDay = new Date(LEC_START_DATE.getFullYear(), LEC_START_DATE.getMonth(), LEC_START_DATE.getDate());
+            
+            // Calculate number of full days passed since the start date
+            const diffTime = Math.abs(now - startOfDay);
+            const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24)); 
+            
+            const done = Math.min(LEC_TOTAL, daysPassed * LEC_RATE);
+            const remaining = LEC_TOTAL - done;
+            
+            document.getElementById('lecRemaining').innerText = remaining;
+            // document.getElementById('lecDone').innerText = done; // Removed from visible HUD
+        }
+
+        // --- TIMER & SCHEDULE ---
         function updateTimer() {
             const now = new Date();
             let currentTaskIndex = -1;
             
-            // Find current task
             for (let i = 0; i < schedule.length; i++) {
                 let start = getTodayDate(schedule[i].start);
                 let end = getTodayDate(schedule[i].end);
-
-                // Midnight crossover fix
                 if (end < start) {
-                    if (now >= start) end.setDate(end.getDate() + 1); // We are in late night
-                    else if (now < end) start.setDate(start.getDate() - 1); // We are in early morning next day
+                    if (now >= start) end.setDate(end.getDate() + 1);
+                    else if (now < end) start.setDate(start.getDate() - 1);
                 }
 
                 if (now >= start && now < end) {
                     currentTaskIndex = i;
                     const diff = end - now;
-                    
                     document.getElementById('taskName').innerText = schedule[i].task;
                     document.getElementById('timer').innerText = formatTime(diff);
-                    
-                    // Style change for last 10 mins
                     document.getElementById('timer').style.color = (diff < 600000) ? 'var(--primary)' : 'var(--text)';
-
+                    
                     updateSubTask(now, schedule[i], start);
 
                     if (currentTaskIndex !== lastCycleIndex) {
                         playAlarm();
-                        renderScheduleList(currentTaskIndex);
+                        renderRollerSchedule(currentTaskIndex);
                         if (schedule[i].type === 'work') document.getElementById('motivationQuote').innerText = quotes[Math.floor(Math.random()*quotes.length)];
                     }
-                    
                     lastCycleIndex = currentTaskIndex;
                     if(Math.floor(diff/1000) === 0 && Math.floor(diff/1000) !== lastSeconds) playAlarm();
                     lastSeconds = Math.floor(diff/1000);
                     break;
                 }
             }
-
-            // Fallback if no task matches (shouldn't happen with 24h coverage)
-            if (currentTaskIndex === -1 && lastCycleIndex !== -1) renderScheduleList(schedule.length);
-            
+            if (currentTaskIndex === -1 && lastCycleIndex !== -1) renderRollerSchedule(schedule.length);
             updateAnalytics(now);
         }
 
         function updateSubTask(now, currentItem, currentItemStart) {
             const subTaskEl = document.getElementById('subTaskName');
-            
             if (!currentItem.breakdown.length) {
                 subTaskEl.innerText = (currentItem.type === 'break') ? "Recover & Hydrate" : "Execution Mode";
                 return;
             }
-
             let acc = 0;
             let found = false;
-            
             for (let i = 0; i < currentItem.breakdown.length; i++) {
                 const part = currentItem.breakdown[i];
-                const durMinutes = parseInt(part.split(' ')[0]);
-                const durMs = durMinutes * 60000;
-                
+                const durMs = parseInt(part.split(' ')[0]) * 60000;
                 const start = new Date(currentItemStart.getTime() + acc);
                 const end = new Date(start.getTime() + durMs);
-                
                 if (now >= start && now < end) {
                     subTaskEl.innerText = `${part} (Ends: ${formatTime(end - now)})`;
-                    
-                    // Beep on sub-task change
-                    if (i !== lastSubTaskIndex) {
-                        playAlarm();
-                        lastSubTaskIndex = i;
-                    }
-                    found = true;
-                    break;
+                    if (i !== lastSubTaskIndex) { playAlarm(); lastSubTaskIndex = i; }
+                    found = true; break;
                 }
                 acc += durMs;
             }
             if(!found) subTaskEl.innerText = "Transitioning...";
         }
 
-        function renderScheduleList(currentIndex) {
+        function renderRollerSchedule(currentIndex) {
             const list = document.getElementById('scheduleList');
             list.innerHTML = '';
             
-            // Past items
+            // 1. ACTIVE & UPCOMING (TOP)
+            for(let i=currentIndex; i<schedule.length; i++) {
+                const div = document.createElement('div');
+                div.className = (i === currentIndex) ? "schedule-item active" : "schedule-item";
+                let details = schedule[i].task;
+                if(schedule[i].type === 'work' && schedule[i].breakdown.length) {
+                    const abbr = schedule[i].breakdown.map(b => `${b.split(' ')[0]}${b.split(' ')[2][0]}`).join('/');
+                    details += ` <span style="font-size:0.75em; opacity:0.7; display:block;">(${abbr})</span>`;
+                }
+                div.innerHTML = `<div class="time-col">${schedule[i].start}</div><div class="task-col">${details}</div>`;
+                list.appendChild(div);
+            }
+
+            // 2. DIVIDER
+            if (currentIndex > 0) {
+                const div = document.createElement('div');
+                div.className = "history-divider";
+                div.innerText = "⬇ MISSION LOG (COMPLETED) ⬇";
+                list.appendChild(div);
+            }
+
+            // 3. COMPLETED (BOTTOM)
             for(let i=0; i<currentIndex; i++) {
                 const div = document.createElement('div');
                 div.className = "schedule-item completed";
                 div.innerHTML = `<div class="time-col">${schedule[i].start}</div><div class="task-col">${schedule[i].task}</div>`;
                 list.appendChild(div);
             }
-            
-            // Current & Future items
-            for(let i=currentIndex; i<schedule.length; i++) {
-                const div = document.createElement('div');
-                div.className = (i === currentIndex) ? "schedule-item active" : "schedule-item";
-                let details = schedule[i].task;
-                if(schedule[i].type === 'work' && schedule[i].breakdown.length) {
-                    // Abbreviate for list: "25R / 20Q / 45L"
-                    const abbr = schedule[i].breakdown.map(b => {
-                        const m = b.split(' ')[0];
-                        const t = b.split(' ')[2]; // Revision, Questions, Lecture
-                        return `${m}${t[0]}`; 
-                    }).join(' / ');
-                    details += ` <span style="font-size:0.75em; opacity:0.7; display:block;">(${abbr})</span>`;
-                }
-                div.innerHTML = `<div class="time-col">${schedule[i].start}</div><div class="task-col">${details}</div>`;
-                list.appendChild(div);
-            }
         }
 
-        // --- 5. ANALYTICS LOGIC ---
+        // --- ANALYTICS ---
         function updateAnalytics(now) {
             let revDone = 0, quesDone = 0, lecDone = 0;
-
             for (let i = 0; i < schedule.length; i++) {
                 const item = schedule[i];
                 if (item.type !== 'work' || !item.breakdown.length) continue;
-
                 let start = getTodayDate(item.start);
                 let end = getTodayDate(item.end);
-                
-                // Crossover fix
-                if(end < start) {
-                   if(now >= start) end.setDate(end.getDate()+1);
-                   else if(now < end) start.setDate(start.getDate()-1);
-                }
-
-                // If cycle hasn't started yet, ignore
+                if(end < start) { if(now >= start) end.setDate(end.getDate()+1); else if(now < end) start.setDate(start.getDate()-1); }
                 if (now < start) continue;
-
-                // Cycle is done or in progress
+                
                 let cycleAcc = 0;
                 item.breakdown.forEach(part => {
                     const mins = parseInt(part);
-                    const partMs = mins * 60000;
                     const partStart = new Date(start.getTime() + cycleAcc);
-                    const partEnd = new Date(partStart.getTime() + partMs);
-                    
+                    const partEnd = new Date(partStart.getTime() + (mins * 60000));
                     let minsToAdd = 0;
-
-                    if (now >= partEnd) {
-                        // Completed fully
-                        minsToAdd = mins;
-                    } else if (now >= partStart && now < partEnd) {
-                        // In progress
-                        minsToAdd = Math.floor((now - partStart) / 60000);
-                    }
-
+                    if (now >= partEnd) minsToAdd = mins;
+                    else if (now >= partStart) minsToAdd = Math.floor((now - partStart) / 60000);
+                    
                     if (part.includes("Revision")) revDone += minsToAdd;
                     else if (part.includes("Questions")) quesDone += minsToAdd;
                     else if (part.includes("Lecture")) lecDone += minsToAdd;
-
-                    cycleAcc += partMs;
+                    cycleAcc += (mins * 60000);
                 });
             }
-
-            // Update DOM
             updateStatBar('barRev', 'valRev', revDone, totalRevTarget);
             updateStatBar('barQues', 'valQues', quesDone, totalQuesTarget);
             updateStatBar('barLec', 'valLec', lecDone, totalLecTarget);
         }
-
         function updateStatBar(barId, textId, current, total) {
             const pct = Math.min(100, (current / total) * 100);
             document.getElementById(barId).style.width = pct + "%";
-            document.getElementById(textId).innerText = `${current} / ${total}m`;
+            document.getElementById(textId).innerText = `${current}/${total}m`;
         }
 
-        // --- 6. WATER LOGIC ---
+        // --- WATER ---
         function updateWaterHUD() {
             const now = new Date();
             let consumed = 0;
             let nextSip = null;
-
             waterPlan.forEach((entry) => {
                 const entryTime = getTodayDate(entry.time);
-                if (entry.time.startsWith("00") && now.getHours() > 6) entryTime.setDate(entryTime.getDate() + 1); // midnight entries logic
-
-                if (now >= entryTime) {
-                    consumed += entry.ml;
-                } else {
-                    if (!nextSip) nextSip = entry;
-                }
+                if (entry.time.startsWith("00") && now.getHours() > 6) entryTime.setDate(entryTime.getDate() + 1);
+                if (now >= entryTime) consumed += entry.ml;
+                else if (!nextSip) nextSip = entry;
             });
-
-            // Update List Styles
+            
             let cumulative = 0;
             const items = document.querySelectorAll('.water-item');
             waterPlan.forEach((entry, idx) => {
                 cumulative += entry.ml;
-                if(consumed >= cumulative) {
-                    if(items[idx]) items[idx].classList.add('done');
-                }
+                if(consumed >= cumulative && items[idx]) items[idx].classList.add('done');
             });
 
             document.getElementById('hudConsumed').innerText = consumed + " ml";
             const percent = Math.min(100, Math.floor((consumed / TOTAL_WATER_ML) * 100));
             document.getElementById('hudPercent').innerText = percent + "%";
             document.getElementById('hudBar').style.width = percent + "%";
-            
-            if (nextSip) {
-                document.getElementById('hudNext').innerText = `Next: ${nextSip.ml}ml @ ${nextSip.time}`;
-            } else {
-                document.getElementById('hudNext').innerText = "Hydration Goal Complete.";
-            }
+            document.getElementById('hudNext').innerText = nextSip ? `Next: ${nextSip.ml}ml @ ${nextSip.time}` : "Goal Complete.";
         }
-
         function renderWaterList() {
-            document.getElementById('fullWaterList').innerHTML = waterPlan.map(p => 
-                `<li class="water-item"><span>${p.time} ${p.note}</span> <span>${p.ml}ml</span></li>`
-            ).join('');
+            document.getElementById('fullWaterList').innerHTML = waterPlan.map(p => `<li class="water-item"><span>${p.time} ${p.note}</span> <span>${p.ml}ml</span></li>`).join('');
         }
 
-        // --- 7. UTILS & NEET COUNTER ---
+        // --- NEET COUNTER ---
+        function updateNeetCounter() {
+            const diff = NEET_TARGET_DATE - new Date();
+            if(diff<0) return;
+            // Update Days
+            document.getElementById('daysCount').innerText = String(Math.floor(diff / (1000*60*60*24))).padStart(3,'0');
+            // Update Hours
+            document.getElementById('hoursCount').innerText = String(Math.floor((diff % (1000*60*60*24))/(1000*60*60))).padStart(2,'0');
+        }
+
+        // --- ALARM ---
         function playAlarm() {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(880, audioCtx.currentTime); // High pitch for alertness
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime);
             gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
             osc.connect(gain); gain.connect(audioCtx.destination);
             osc.start(); osc.stop(audioCtx.currentTime + 0.3);
         }
 
-        function updateNeetCounter() {
-            const diff = NEET_TARGET_DATE - new Date();
-            if(diff<0) return;
-            document.getElementById('daysCount').innerText = String(Math.floor(diff / (1000*60*60*24))).padStart(3,'0');
-            document.getElementById('hoursCount').innerText = String(Math.floor((diff % (1000*60*60*24))/(1000*60*60))).padStart(2,'0');
+        // --- SNOWFALL ---
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            const size = Math.random() * 3 + 2; 
+            snowflake.style.width = `${size}px`;
+            snowflake.style.height = `${size}px`;
+            snowflake.style.left = `${Math.random() * 100}vw`;
+            snowflake.style.animationDuration = `${Math.random() * 10 + 5}s`;
+            snowflake.style.animationDelay = `${Math.random() * 10}s`;
+            snowflake.style.setProperty('--drift', `${Math.random() * 50 - 25}vw`); 
+            document.getElementById('snowfall-layer').appendChild(snowflake);
         }
 
-        // Music
-        fileInput.addEventListener('change', (e) => {
-            const files = Array.from(e.target.files);
-            if(files.length) {
-                const url = URL.createObjectURL(files[0]);
-                musicPlayer.src = url;
-                document.getElementById('trackName').innerText = `Playing: ${files[0].name}`;
-                musicPlayer.play();
+        function startSnowfall() {
+            const now = new Date();
+            const snowLayer = document.getElementById('snowfall-layer');
+
+            if (now < LEC_FINISH_DATE_SNOW) {
+                // Keep creating snowflakes
+                for (let i = 0; i < 50; i++) {
+                    createSnowflake();
+                }
+                
+                // Set a timeout to check for the stop date (e.g., check every day)
+                const tomorrow = new Date(now);
+                tomorrow.setDate(now.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0); 
+                const msUntilTomorrow = tomorrow - now;
+                
+                setTimeout(startSnowfall, msUntilTomorrow);
+
+            } else {
+                // Stop snowfall by clearing the layer
+                snowLayer.innerHTML = '';
+                snowLayer.style.opacity = '0';
+                console.log("Snowfall stopped. Target date achieved.");
             }
-        });
+        }
     </script>
 </body>
 </html>
