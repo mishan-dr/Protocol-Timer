@@ -3,63 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIIMS COMMAND | STRATEGIST v6.1</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+    <title>TITAN COMMAND | NEET 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=JetBrains+Mono:wght@500;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-deep: #000000;
-            --bg-panel: #0c0c0c;
-            --border: #333333; 
-            --accent: #3b82f6; 
-            --red-alert: #ff003c; 
-            --gold: #ffd700;
-            --text-main: #ffffff;
-            --text-dim: #888888;
+            --bg-core: #050505;
+            --bg-panel: #0f1115;
             
-            --font-tech: 'JetBrains Mono', monospace;
+            /* High Vis Military Colors */
+            --primary: #00e5ff; /* Cyan HUD */
+            --alert: #ff1a1a;   /* Critical Red */
+            --success: #39ff14; /* Terminal Green */
+            --gold: #ffaa00;    /* Rank Gold */
+            
+            --border-dim: #2a2f3a;
+            --border-bright: #566b78;
+            
+            --text-main: #e0e6ed;
+            --text-muted: #788791;
+            
+            --font-head: 'Black Ops One', cursive; /* Stencil */
             --font-ui: 'Rajdhani', sans-serif;
+            --font-data: 'JetBrains Mono', monospace;
         }
 
-        body[data-theme="bio"] { --accent: #00ff88; }
-        body[data-theme="alert"] { --accent: #ff003c; }
+        /* Color Themes */
+        body[data-theme="bio"] { --primary: #39ff14; }
+        body[data-theme="alert"] { --primary: #ff1a1a; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; transition: border 0.3s, color 0.3s; }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         ::-webkit-scrollbar { width: 6px; background: #000; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--border-bright); }
 
         body {
-            background-color: var(--bg-deep);
+            background-color: var(--bg-core);
             color: var(--text-main);
             font-family: var(--font-ui);
             height: 100vh;
             overflow: hidden;
+            /* Tactical Grid */
             background-image: 
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
+                linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* --- LAYOUT --- */
-        .hud-container {
+        /* --- LAYOUT (1440x900 Optimized) --- */
+        .hud-grid {
             width: 100%; height: 100%;
             display: grid;
-            grid-template-columns: 280px 1fr 280px;
-            grid-template-rows: 70px 1fr 40px;
-            gap: 12px;
-            padding: 12px;
+            grid-template-columns: 290px 1fr 280px;
+            grid-template-rows: 80px 1fr 45px;
+            gap: 15px;
+            padding: 15px;
         }
 
+        /* --- PANEL CONSTRUCTION --- */
         .panel {
             background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: 4px;
+            border: 1px solid var(--border-dim);
+            position: relative;
             display: flex;
             flex-direction: column;
-            position: relative;
+        }
+        
+        /* Corner Brackets (Military Look) */
+        .panel::before {
+            content: ''; position: absolute; top: -1px; left: -1px;
+            width: 10px; height: 10px;
+            border-top: 2px solid var(--primary); border-left: 2px solid var(--primary);
+        }
+        .panel::after {
+            content: ''; position: absolute; bottom: -1px; right: -1px;
+            width: 10px; height: 10px;
+            border-bottom: 2px solid var(--primary); border-right: 2px solid var(--primary);
         }
 
         /* --- HEADER --- */
@@ -68,157 +89,163 @@
             flex-direction: row;
             align-items: center;
             justify-content: space-between;
-            padding: 0 25px;
-            border-bottom: 2px solid var(--accent);
-            background: rgba(10,10,10,0.95);
+            padding: 0 30px;
+            border-bottom: 2px solid var(--border-dim);
+            background: rgba(15, 17, 21, 0.95);
         }
+
+        .target-box { display: flex; align-items: center; gap: 15px; }
+        .target-label { font-family: var(--font-data); font-size: 0.7rem; color: var(--alert); letter-spacing: 2px; }
+        .target-name { 
+            font-family: var(--font-head); font-size: 2rem; color: var(--text-main); 
+            text-shadow: 0 0 10px rgba(0,0,0,0.5); letter-spacing: 1px;
+        }
+        .rank-badge { 
+            background: #222; border: 1px solid var(--border-bright); 
+            color: var(--gold); padding: 4px 8px; font-family: var(--font-data); 
+            font-size: 0.8rem; font-weight: bold; 
+        }
+
+        .timer-center { text-align: center; }
+        .main-clock { font-family: var(--font-data); font-size: 2.8rem; font-weight: 800; color: var(--primary); line-height: 1; text-shadow: 0 0 15px rgba(0, 229, 255, 0.3); }
+        .status-light { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 8px var(--success); }
+        .clock-label { font-size: 0.8rem; letter-spacing: 3px; color: var(--text-muted); text-transform: uppercase; }
+
+        .header-stats { text-align: right; }
+        .days-big { font-family: var(--font-head); font-size: 2.2rem; color: var(--text-main); line-height: 1; }
+        .days-sub { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- SIDEBARS --- */
+        .sidebar { grid-row: 2 / 3; padding: 20px; gap: 20px; }
         
-        .brand-box { display: flex; align-items: center; gap: 15px; }
-        .aiims-label { font-family: var(--font-tech); font-weight: 800; font-size: 1.1rem; color: var(--red-alert); letter-spacing: 2px; text-shadow: 0 0 10px var(--red-alert); }
-        .target-loc { font-size: 1.5rem; font-weight: 700; color: #fff; }
-        .sc-rank { font-size: 0.8rem; color: var(--text-dim); font-family: var(--font-tech); background: #151515; padding: 3px 8px; border: 1px solid #333; border-radius: 4px; }
-
-        .timer-box { display: flex; align-items: center; gap: 15px; }
-        .main-timer { font-family: var(--font-tech); font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1; text-shadow: 0 0 15px rgba(255,255,255,0.1); }
-        .timer-label { font-size: 0.8rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-
-        .controls { display: flex; align-items: center; gap: 25px; }
-        .days-container { text-align: right; }
-        .days-left { font-size: 2rem; font-weight: 800; color: #fff; line-height: 1; }
-        .days-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .stat-card {
+            border-left: 2px solid var(--border-dim);
+            padding-left: 15px;
+            margin-bottom: 5px;
+        }
+        .stat-card.active-stat { border-left-color: var(--primary); }
         
-        .color-btn { 
-            width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--border); 
-            background: transparent; color: var(--accent); font-size: 1.2rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+        .sc-head { font-family: var(--font-head); font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px; }
+        .sc-val { font-family: var(--font-data); font-size: 1.8rem; font-weight: 800; color: var(--text-main); }
+        
+        /* Bar Design */
+        .mil-bar-bg { width: 100%; height: 8px; background: #1a1d24; border: 1px solid #333; margin-top: 5px; }
+        .mil-bar-fill { height: 100%; background: var(--primary); width: 0%; position: relative; }
+        /* Stripe effect on bar */
+        .mil-bar-fill::after {
+            content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px);
         }
-        .color-btn:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
 
-        /* --- SIDEBAR LEFT (Progress) --- */
-        .sidebar {
-            grid-row: 2 / 3;
-            padding: 20px;
-            gap: 20px;
-        }
-        .stat-block { border-bottom: 1px solid var(--border); padding-bottom: 12px; }
-        .sb-label { font-size: 0.75rem; font-weight: 700; color: var(--accent); margin-bottom: 5px; letter-spacing: 1px; }
-        .sb-val { font-size: 1.8rem; font-weight: 700; color: #fff; font-family: var(--font-tech); line-height: 1; }
-        .sb-progress-bg { height: 5px; background: #222; width: 100%; border-radius: 2px; margin-top: 6px; }
-        .sb-fill { height: 100%; background: var(--accent); width: 0%; border-radius: 2px; box-shadow: 0 0 5px var(--accent); }
-
-        .phase-box { margin-top: auto; padding: 15px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-left: 3px solid var(--accent); }
-        .phase-title { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;}
-        .phase-val { font-size: 1.1rem; color: #fff; font-weight: 700; margin-top: 3px; }
-        .phase-timer { font-family: var(--font-tech); color: var(--accent); font-size: 1.1rem; margin-top: 5px; font-weight: 700; }
-
-        /* --- CENTER (Schedule) --- */
-        .main-view {
-            grid-row: 2 / 3;
-            overflow: hidden;
-        }
-        .schedule-list {
-            overflow-y: auto;
-            padding: 0;
-            flex: 1;
-            scroll-behavior: smooth;
-        }
-        .task-row {
-            display: grid;
-            grid-template-columns: 90px 1fr 60px;
-            padding: 14px 20px;
-            border-bottom: 1px solid #1a1a1a;
-            align-items: center;
-        }
-        .task-row:hover { background: rgba(255,255,255,0.02); }
-        .task-row.active { background: rgba(59, 130, 246, 0.15); border-left: 4px solid var(--accent); }
-        .task-row.done { opacity: 0.3; }
-
-        .tr-time { font-family: var(--font-tech); font-size: 0.8rem; color: var(--text-dim); }
-        .tr-name { font-size: 0.95rem; font-weight: 700; color: #fff; }
-        .tr-tag { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #000; background: var(--text-dim); padding: 3px 6px; border-radius: 3px; text-align: center; }
-
-        /* --- SIDEBAR RIGHT (Strategy) --- */
-        .sidebar-right {
-            grid-row: 2 / 3;
-            padding: 20px;
-            gap: 15px;
-        }
-        .widget-box {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
+        .tactical-display {
+            margin-top: auto;
+            border: 1px solid var(--primary);
             padding: 15px;
-            text-align: center;
+            background: rgba(0, 229, 255, 0.05);
         }
-        .wb-title { font-size: 0.7rem; color: var(--red-alert); font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase; }
-        .wb-big { font-size: 2.2rem; font-weight: 800; color: #fff; font-family: var(--font-tech); line-height: 1; }
-        .wb-sub { font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; text-transform: uppercase; }
+        .td-title { font-size: 0.7rem; color: var(--primary); letter-spacing: 2px; font-weight: 800; margin-bottom: 5px; }
+        .td-info { font-family: var(--font-head); font-size: 1.4rem; color: var(--text-main); line-height: 1.1; }
+        .td-timer { font-family: var(--font-data); color: var(--text-muted); font-size: 1rem; margin-top: 5px; }
+
+        /* --- MAIN SCHEDULE --- */
+        .main-view { grid-row: 2 / 3; overflow: hidden; }
+        .schedule-list { flex: 1; overflow-y: auto; padding: 0; }
         
-        .gold-zone { color: var(--gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+        .op-row {
+            display: grid; grid-template-columns: 100px 1fr 70px;
+            padding: 15px 20px; border-bottom: 1px solid var(--border-dim);
+            align-items: center; opacity: 0.5;
+        }
+        .op-row:hover { background: rgba(255,255,255,0.02); opacity: 0.8; }
+        
+        .op-row.active {
+            opacity: 1; background: rgba(0, 229, 255, 0.08);
+            border-left: 4px solid var(--primary);
+            border-bottom: 1px solid var(--primary);
+        }
+        
+        .op-time { font-family: var(--font-data); font-size: 0.8rem; color: var(--primary); }
+        .op-task { font-family: var(--font-ui); font-size: 1.1rem; font-weight: 700; color: var(--text-main); text-transform: uppercase; }
+        .op-tag { 
+            font-size: 0.65rem; font-weight: 800; text-transform: uppercase; 
+            background: #222; color: var(--text-muted); padding: 4px 0; 
+            text-align: center; border: 1px solid #444; 
+        }
+
+        /* --- RIGHT WIDGETS --- */
+        .widget { 
+            background: #15171c; border: 1px solid var(--border-dim); 
+            padding: 15px; text-align: center; 
+        }
+        .w-title { font-family: var(--font-data); font-size: 0.7rem; color: var(--alert); letter-spacing: 1px; margin-bottom: 8px; }
+        .w-big { font-family: var(--font-head); font-size: 2.5rem; color: var(--text-main); line-height: 1; }
+        .w-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; text-transform: uppercase; }
 
         /* --- FOOTER --- */
         .footer {
             grid-column: 1 / -1;
             display: flex; align-items: center; padding: 0 20px;
-            font-family: var(--font-tech); font-size: 0.9rem; color: var(--accent);
-            border-top: 1px solid var(--border); background: #000;
+            font-family: var(--font-data); font-size: 0.85rem; color: var(--primary);
+            border-top: 2px solid var(--border-dim); background: #0a0c10;
         }
-        .blinking-cursor { display: inline-block; width: 8px; height: 16px; background: var(--accent); margin-left: 5px; animation: blink 1s infinite; }
-        @keyframes blink { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+        .cursor { display: inline-block; width: 10px; height: 18px; background: var(--primary); margin-left: 8px; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .theme-toggle { position: absolute; bottom: 20px; right: 20px; width: 20px; height: 20px; border-radius: 50%; border: 1px solid #555; background: transparent; cursor: pointer; }
 
         /* --- RESPONSIVE --- */
         @media (max-width: 1000px) {
-            .hud-container { display: flex; flex-direction: column; height: auto; overflow-y: auto; }
-            .header { flex-direction: column; gap: 15px; padding: 20px; height: auto; }
-            .sidebar-right { order: 3; } 
-            .main-view { height: 500px; }
+            .hud-grid { display: flex; flex-direction: column; height: auto; overflow-y: auto; }
+            .header { flex-direction: column; height: auto; padding: 20px; gap: 15px; }
+            .timer-center { order: -1; }
+            .main-view { height: 600px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="hud-container">
+    <div class="hud-grid">
         <header class="panel header">
-            <div class="brand-box">
-                <div class="aiims-label">TARGET: AIIMS</div>
-                <div class="target-loc" id="aiimsLoc">RISHIKESH</div>
-                <div class="sc-rank">SC: <span id="scRank">8240</span></div>
+            <div class="target-box">
+                <div>
+                    <div class="target-label">PRIMARY TARGET</div>
+                    <div class="target-name">AIIMS <span id="aiimsLoc" style="color:var(--primary)">RISHIKESH</span></div>
+                </div>
+                <div class="rank-badge">SC: <span id="scRank">8240</span></div>
             </div>
             
-            <div class="timer-box">
-                <div class="main-timer" id="mainTimer">00:00:00</div>
-                <div class="timer-label" id="taskStatus">SYSTEM READY</div>
+            <div class="timer-center">
+                <div class="main-clock"><span class="status-light"></span><span id="mainTimer">00:00:00</span></div>
+                <div class="clock-label" id="taskStatus">SYSTEM INITIALIZING</div>
             </div>
 
-            <div class="controls">
-                <div class="days-container">
-                    <div class="days-left" id="daysLeft">--</div>
-                    <div class="days-label">Days to May 2</div>
-                </div>
-                <button class="color-btn" onclick="toggleTheme()">🎨</button>
+            <div class="header-stats">
+                <div class="days-big" id="daysLeft">--</div>
+                <div class="days-sub">DAYS TO MAY 02</div>
             </div>
         </header>
 
         <aside class="panel sidebar">
-            <div class="stat-block">
-                <div class="sb-label">PHYSICS (180)</div>
-                <div class="sb-val" id="phyVal">0</div>
-                <div class="sb-progress-bg"><div class="sb-fill" id="phyBar"></div></div>
+            <div class="stat-card active-stat">
+                <div class="sc-head">PHYSICS (180)</div>
+                <div class="sc-val" style="color:var(--primary)" id="phyVal">0</div>
+                <div class="mil-bar-bg"><div class="mil-bar-fill" id="phyBar"></div></div>
             </div>
-            <div class="stat-block">
-                <div class="sb-label">CHEMISTRY (263)</div>
-                <div class="sb-val" id="chemVal">0</div>
-                <div class="sb-progress-bg"><div class="sb-fill" id="chemBar"></div></div>
+            <div class="stat-card">
+                <div class="sc-head">CHEMISTRY (263)</div>
+                <div class="sc-val" style="color:var(--primary)" id="chemVal">0</div>
+                <div class="mil-bar-bg"><div class="mil-bar-fill" id="chemBar"></div></div>
             </div>
-            <div class="stat-block">
-                <div class="sb-label">BIOLOGY (180)</div>
-                <div class="sb-val" id="bioVal">0</div>
-                <div class="sb-progress-bg"><div class="sb-fill" id="bioBar"></div></div>
+            <div class="stat-card">
+                <div class="sc-head">BIOLOGY (180)</div>
+                <div class="sc-val" style="color:var(--success)" id="bioVal">0</div>
+                <div class="mil-bar-bg"><div class="mil-bar-fill" style="background:var(--success)" id="bioBar"></div></div>
             </div>
-            
-            <div class="phase-box">
-                <div class="phase-title">TACTICAL PHASE</div>
-                <div class="phase-val" id="subPhase">STANDBY</div>
-                <div class="phase-timer" id="subTimer">--:--</div>
+
+            <div class="tactical-display">
+                <div class="td-title">TACTICAL PHASE</div>
+                <div class="td-info" id="subPhase">STANDBY</div>
+                <div class="td-timer" id="subTimer">--:--</div>
             </div>
         </aside>
 
@@ -226,59 +253,57 @@
             <div class="schedule-list" id="scheduleList"></div>
         </main>
 
-        <aside class="panel sidebar-right">
-            <div class="widget-box">
-                <div class="wb-title">REMAINING</div>
-                <div class="wb-big" style="color:var(--accent)" id="remLec">623</div>
-                <div class="wb-sub">TOTAL LECTURES LEFT</div>
+        <aside class="panel sidebar" style="gap:15px;">
+            <div class="widget">
+                <div class="w-title">DAILY KILL COUNT</div>
+                <div class="w-big" id="todayCount">0 / 8</div>
+                <div class="w-sub">LECTURES EXECUTED</div>
             </div>
 
-            <div class="widget-box">
-                <div class="wb-title">FINISH DATE</div>
-                <div class="wb-big" style="color:var(--text-main)" id="finishDate">FEB 26</div>
-                <div class="wb-sub">SYLLABUS COMPLETION</div>
+            <div class="widget">
+                <div class="w-title">TARGETS REMAINING</div>
+                <div class="w-big" style="color:var(--gold)" id="remLec">623</div>
+                <div class="w-sub">TOTAL LECTURES</div>
             </div>
 
-            <div class="widget-box" style="border-color:var(--gold);">
-                 <div class="wb-title" style="color:var(--gold);">GOLD ZONE</div>
-                 <div class="wb-big gold-zone" id="bufferDays">65</div>
-                 <div class="wb-sub">REVISION DAYS LEFT</div>
+            <div class="widget">
+                <div class="w-title">COMPLETION ETA</div>
+                <div class="w-big" style="font-size:1.8rem; color:var(--success)" id="finishDate">FEB 26</div>
+                <div class="w-sub">REVISION BUFFER: <span id="bufferDays" style="color:#fff; font-weight:bold;">65 DAYS</span></div>
             </div>
             
-            <div class="widget-box" style="flex:1; border:none; background:transparent; padding:0; display:flex; flex-direction:column;">
-                <textarea style="flex:1; width:100%; background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:4px; color:#666; font-size:0.75rem; padding:10px; resize:none;" placeholder="Mental Dump Area..."></textarea>
-            </div>
+            <button class="theme-toggle" onclick="toggleTheme()"></button>
         </aside>
 
         <footer class="panel footer">
-            <span style="color:var(--text-dim); margin-right:15px;">:: INTEL_FEED :: </span>
-            <span id="typewriterText"></span><span class="blinking-cursor"></span>
+            <span style="color:var(--text-muted); margin-right:15px;">:: INTEL_STREAM ::</span>
+            <span id="typewriterText"></span><span class="cursor"></span>
         </footer>
     </div>
 
     <script>
-        // --- CONSTANTS ---
+        // --- DATA ---
         const FACTS = [
-            "PHY: Accel in SHM is max at extremes (a = -ω²A).",
-            "CHEM: Stability: 3° > 2° > 1° (Free Radicals).",
-            "BIO: Telophase is reverse of Prophase.",
-            "PHY: Work by Magnetic Force is ZERO.",
-            "CHEM: F has lower EA than Cl (Size repulsion).",
-            "BIO: S1 Sound: Closure of AV valves.",
-            "PHY: dQ = dU + dW (1st Law).",
-            "CHEM: SN2: Inversion of Config (Walden).",
-            "BIO: Spermatogenesis: Seminiferous Tubules.",
-            "PHY: Drift Velocity is ~10^-4 m/s.",
-            "CHEM: Amphoteric: Al2O3, ZnO, PbO, SnO2.",
-            "BIO: DNA Rep is Semi-Conservative.",
-            "PHY: C = 4πε₀R (Spherical Conductor).",
-            "CHEM: NH3 Angle < CH4 (lp-bp repulsion).",
-            "BIO: Birds/Reptiles: Uric Acid.",
-            "PHY: Lenz's Law = Energy Conservation.",
-            "CHEM: Koibe's Rxn: Phenol -> Salicylic Acid.",
-            "BIO: Corpus Luteum -> Progesterone.",
-            "PHY: μ = Real Depth / Apparent Depth.",
-            "CHEM: Packing: FCC(74%) > BCC(68%)."
+            "PHY: In SHM, Accel = -ω²x. Max at extremes.",
+            "CHEM: Stability of Carbocations: 3° > 2° > 1°.",
+            "BIO: Meiosis I: Reductional. Meiosis II: Equational.",
+            "PHY: Magnetic Field inside Solenoid B = μ₀nI.",
+            "CHEM: Electronegativity: F > O > N = Cl.",
+            "BIO: SA Node is the Pacemaker of the Heart.",
+            "PHY: 2nd Law of Thermo: Entropy of universe increases.",
+            "CHEM: Grignard Reagent + H2O -> Alkane.",
+            "BIO: Mitochondria: Powerhouse (ATP Production).",
+            "PHY: Escape Velocity Ve = √(2gR).",
+            "CHEM: Coordination Number of FCC is 12.",
+            "BIO: DNA Polymerase synthesizes 5' -> 3'.",
+            "PHY: Photoelectric Effect: Kmax = hν - φ.",
+            "CHEM: Acid Strength: HI > HBr > HCl > HF.",
+            "BIO: Nephron is the structural unit of Kidney.",
+            "PHY: Bernoulli's Theorem: Conservation of Energy (Fluids).",
+            "CHEM: Haber Process: N2 + 3H2 -> 2NH3 (Fe catalyst).",
+            "BIO: Insulin lowers blood sugar (Beta cells).",
+            "PHY: Resistance R = ρL/A.",
+            "CHEM: Graphite conducts electricity (Free electron)."
         ];
 
         const LOCATIONS = [
@@ -286,7 +311,6 @@
             {n:"BHOPAL", r:"7030"}, {n:"KALYANI", r:"17433"}
         ];
 
-        // 1 = Count as Lecture
         const PROTOCOL = [
             { start: "08:00", end: "08:30", task: "WAKE UP / PREP", type: "prep", video: 0 },
             { start: "08:30", end: "10:00", task: "PHYSICS (CYCLE 1)", type: "phy", video: 1, sub: 'phy' },
@@ -312,7 +336,7 @@
         const START_DATE = new Date("2025-12-10T00:00:00");
         const PREP_END_DATE = new Date("2026-05-02T23:59:59");
         const TOTAL_LEC_GOAL = 623;
-        const RATE = 8; // lecs/day
+        const RATE = 8; 
 
         // --- TYPEWRITER ---
         let fIdx = 0, cIdx = 0, isDel = false, isWait = false;
@@ -355,36 +379,31 @@
         }
         function pad(n) { return n < 10 ? '0'+n : n; }
 
-        // --- STRATEGY CALC ---
-        function calculateStrategy() {
-            // 1. Projected Finish
+        // --- STRATEGY ---
+        function runStrategy() {
             const daysToFinish = Math.ceil(TOTAL_LEC_GOAL / RATE);
             const finishDate = new Date(START_DATE.getTime() + (daysToFinish * 24 * 60 * 60 * 1000));
+            const mNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN"];
+            document.getElementById('finishDate').innerText = `${mNames[finishDate.getMonth()]} ${finishDate.getDate()}`;
             
-            const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN"];
-            const fStr = `${monthNames[finishDate.getMonth()]} ${finishDate.getDate()}`;
-            document.getElementById('finishDate').innerText = fStr;
-
-            // 2. Buffer Days (Finish Date -> May 2)
             const diffTime = PREP_END_DATE - finishDate;
-            const bufferDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            document.getElementById('bufferDays').innerText = bufferDays > 0 ? bufferDays : 0;
+            const bufferDays = Math.floor(diffTime / 86400000);
+            document.getElementById('bufferDays').innerText = (bufferDays > 0 ? bufferDays : 0) + " DAYS";
         }
-        calculateStrategy();
+        runStrategy();
 
-        // --- MAIN LOOP ---
+        // --- TICK ---
         function tick() {
             const now = new Date();
             const sec = Math.floor(Date.now() / 1000);
 
-            // Loc
+            // Carousel
             const loc = LOCATIONS[Math.floor(sec/4) % LOCATIONS.length];
             document.getElementById('aiimsLoc').innerText = loc.n;
             document.getElementById('scRank').innerText = loc.r;
 
-            // Days Left to May 2
-            const diff = PREP_END_DATE - now;
-            document.getElementById('daysLeft').innerText = Math.max(0, Math.ceil(diff / 86400000));
+            // Days Left (Target May 2)
+            document.getElementById('daysLeft').innerText = Math.max(0, Math.ceil((PREP_END_DATE - now) / 86400000));
 
             // Schedule
             let curMins = now.getHours() * 60 + now.getMinutes();
@@ -409,25 +428,30 @@
                     if(item.video) {
                         let elapsed = adjCur - s;
                         let phName = "", phTime = 0;
-                        if(elapsed < 45) { phName="VIDEO"; phTime = 45 - elapsed; }
-                        else if(elapsed < 70) { phName="QUESTIONS"; phTime = 70 - elapsed; }
-                        else { phName="REVISION"; phTime = 90 - elapsed; }
+                        if(elapsed < 45) { phName="VIDEO LECTURE"; phTime = 45 - elapsed; }
+                        else if(elapsed < 70) { phName="QUESTION PRACTICE"; phTime = 70 - elapsed; }
+                        else { phName="ACTIVE REVISION"; phTime = 90 - elapsed; }
                         
-                        document.getElementById('subPhase').innerText = `PHASE: ${phName}`;
-                        document.getElementById('subTimer').innerText = `${phTime}m ${remSecs}s LEFT`;
+                        document.getElementById('subPhase').innerText = phName;
+                        document.getElementById('subTimer').innerText = `T-MINUS ${phTime}m ${remSecs}s`;
                     } else {
-                        document.getElementById('subPhase').innerText = "FULL FOCUS";
-                        document.getElementById('subTimer').innerText = "--";
+                        document.getElementById('subPhase').innerText = item.type.toUpperCase() + " MODE";
+                        document.getElementById('subTimer').innerText = "IN PROGRESS";
                     }
                 } else if (adjCur >= e) {
                     state = "done";
                 }
 
+                let colorClass = '#788791';
+                if(item.type==='phy') colorClass='var(--alert)';
+                if(item.type==='chem') colorClass='var(--primary)';
+                if(item.type==='bio') colorClass='var(--success)';
+
                 html += `
-                    <div id="task-${idx}" class="task-row ${state}">
-                        <div class="tr-time">${formatTime(item.start)}</div>
-                        <div class="tr-name">${item.task}</div>
-                        <div class="tr-tag">${item.type}</div>
+                    <div id="task-${idx}" class="op-row ${state}">
+                        <div class="op-time">${formatTime(item.start)}</div>
+                        <div class="op-task">${item.task}</div>
+                        <div class="op-tag" style="color:${colorClass}; border-color:${colorClass}">${item.type}</div>
                     </div>
                 `;
             });
@@ -452,17 +476,16 @@
             let daysPassed = Math.floor(timeSinceStart / 86400000);
             if(daysPassed < 0) daysPassed = -1;
 
-            let p=0, c=0, b=0;
+            let p=0, c=0, b=0, todayDone=0;
 
             if(daysPassed >= 0) {
-                // Past Days
                 p = daysPassed * 2; c = daysPassed * 3; b = daysPassed * 3;
-                // Today
                 PROTOCOL.forEach(s => {
                     if(s.video) {
                          let e = getMins(s.end); if(e < getMins(s.start)) e+=1440;
                          if(adjCur >= e) {
                              if(s.sub==='phy') p++; if(s.sub==='chem') c++; if(s.sub==='bio') b++;
+                             todayDone++;
                          }
                     }
                 });
@@ -472,6 +495,7 @@
             document.getElementById('chemVal').innerText = c; document.getElementById('chemBar').style.width = Math.min(100, (c/263)*100)+"%";
             document.getElementById('bioVal').innerText = b; document.getElementById('bioBar').style.width = Math.min(100, (b/180)*100)+"%";
             
+            document.getElementById('todayCount').innerText = `${todayDone} / 8`;
             let totalDone = p + c + b;
             document.getElementById('remLec').innerText = Math.max(0, TOTAL_LEC_GOAL - totalDone);
         }
