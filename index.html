@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIIMS Protocol App</title>
+    <title>Protocol + Accountability Tracker</title>
     
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#121212">
-    
     <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkFJSU1TIFByb3RvY29sIiwKICAic2hvcnRfbmFtZSI6ICJQcm90b2NvbCIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMTIxMjEyIiwKICAidGhlbWVfY29xvciI6ICIjZWY0NDQ0IiwKICAiaWNvbnMiOiBbXQp9">
 
     <style>
@@ -22,6 +20,8 @@
             --accent: #ef4444; /* Red */
             --border: #333;
             --status-bg: rgba(239, 68, 68, 0.2);
+            --btn-start: #10b981; /* Green */
+            --btn-stop: #ef4444; /* Red */
         }
 
         /* --- THEME: WORK (DARK + RED) --- */
@@ -30,23 +30,22 @@
             --bg-card: #171717;       
             --text-main: #f5f5f5;     
             --text-sub: #a1a1aa;      
-            --accent: #ff2a2a;        /* Neon Red */
+            --accent: #ff2a2a;        
             --border: #333333;
             --status-bg: rgba(220, 38, 38, 0.3);
         }
 
         /* --- THEME: BREAK (WHITE + GREEN) --- */
         body.mode-break {
-            --bg-body: #f0fdf4;       /* Mint White */
+            --bg-body: #f0fdf4;       
             --bg-card: #ffffff;       
-            --text-main: #14532d;     /* Dark Green Text */
+            --text-main: #14532d;     
             --text-sub: #4ade80;      
-            --accent: #16a34a;        /* Strong Green */
+            --accent: #16a34a;        
             --border: #bbf7d0;
             --status-bg: #dcfce7;
         }
 
-        /* --- LAYOUT OPTIMIZED FOR 1400x900 --- */
         body {
             background-color: var(--bg-body);
             color: var(--text-main);
@@ -57,7 +56,7 @@
             flex-direction: column;
             overflow: hidden;
             transition: background-color 0.8s ease, color 0.8s ease;
-            user-select: none; /* App-like feel */
+            user-select: none;
         }
 
         header {
@@ -86,6 +85,13 @@
             color: var(--text-main);
             font-variant-numeric: tabular-nums;
         }
+        
+        #wakelock-status {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            margin-top: 5px;
+            text-align: right;
+        }
 
         /* --- LIST CONTAINER --- */
         .container {
@@ -103,7 +109,7 @@
 
         .row {
             display: flex;
-            align-items: center;
+            align-items: flex-start; /* Align top for logs */
             width: 70%; 
             max-width: 1000px; 
             margin-bottom: 12px;
@@ -117,16 +123,21 @@
         }
 
         .time {
-            width: 160px; /* Wider for 12h format */
+            width: 160px;
             font-size: 1.2rem;
             font-weight: 600;
             color: var(--text-sub);
+            padding-top: 5px;
         }
 
-        .task {
+        .task-container {
             flex-grow: 1;
+        }
+
+        .task-title {
             font-size: 1.3rem;
             font-weight: 500;
+            margin-bottom: 8px;
         }
 
         .status {
@@ -137,6 +148,57 @@
             color: var(--text-sub);
             min-width: 140px;
             text-align: right;
+            padding-top: 5px;
+        }
+
+        /* --- MANUAL TRACKER STYLES --- */
+        .tracker-area {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            display: none; /* Hidden by default, shown for Q/Revision */
+        }
+        
+        .tracker-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        button.track-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: monospace;
+            text-transform: uppercase;
+            transition: transform 0.1s;
+        }
+        button.track-btn:active { transform: scale(0.95); }
+
+        .btn-start { background-color: var(--btn-start); color: #000; }
+        .btn-stop { background-color: var(--btn-stop); color: #fff; animation: pulse-red 2s infinite; }
+
+        .live-timer {
+            font-family: monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .log-history {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 5px;
+        }
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
         }
 
         /* --- ACTIVE STATE --- */
@@ -150,7 +212,7 @@
         }
 
         .row.active .time, 
-        .row.active .task {
+        .row.active .task-title {
             color: var(--accent);
             font-weight: 700;
         }
@@ -158,34 +220,38 @@
         .row.active .status {
             background: var(--status-bg);
             color: var(--accent);
-            padding: 8px 15px;
+            padding: 5px 10px;
             border-radius: 6px;
         }
 
-        /* Urgent Animation */
         body.mode-work .row.active .status {
             animation: breathe 2s infinite;
         }
+        
         @keyframes breathe {
             0% { opacity: 1; box-shadow: 0 0 5px var(--accent); }
             50% { opacity: 0.7; box-shadow: 0 0 15px var(--accent); }
             100% { opacity: 1; box-shadow: 0 0 5px var(--accent); }
         }
+        
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
 
-        /* --- PAST STATE --- */
         .row.past {
             opacity: 0.2;
             filter: grayscale(100%);
         }
         
-        /* Break Mode Specifics */
         body.mode-break .row.active {
             border-color: #16a34a; 
         }
 
     </style>
 </head>
-<body class="mode-work">
+<body class="mode-work" onclick="enableWakeLock()">
 
     <header>
         <div class="header-left">
@@ -193,6 +259,7 @@
         </div>
         <div class="header-right">
             <div id="clock">12:00 PM</div>
+            <div id="wakelock-status">Tap screen to keep awake</div>
         </div>
     </header>
 
@@ -200,63 +267,75 @@
         </div>
 
     <script>
-        // --- 45/15 PROTOCOL (Internal Logic uses 24h for math, Display uses 12h) ---
+        // --- 1. WAKE LOCK ---
+        let wakeLock = null;
+        async function enableWakeLock() {
+            if ('wakeLock' in navigator) {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    document.getElementById('wakelock-status').innerText = "● Screen Lock Active";
+                    document.getElementById('wakelock-status').style.color = "#4ade80"; 
+                } catch (err) { console.log(err); }
+            }
+        }
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') enableWakeLock();
+        });
+        enableWakeLock();
+
+
+        // --- 2. SCHEDULE & DATA ---
         const schedule = [
             { start: "08:00", end: "08:45", task: "Biology Lecture", type: "work" },
             { start: "08:45", end: "09:00", task: "Break (Refill Water)", type: "break" },
-            
             { start: "09:00", end: "09:45", task: "Biology Lecture", type: "work" },
             { start: "09:45", end: "10:00", task: "Break", type: "break" },
-
             { start: "10:00", end: "10:45", task: "Biology Lecture", type: "work" },
             { start: "10:45", end: "11:00", task: "Break", type: "break" },
-
-            { start: "11:00", end: "11:45", task: "Biology Revision", type: "work" },
+            { start: "11:00", end: "11:45", task: "Biology Revision", type: "work" }, // Target
             { start: "11:45", end: "12:00", task: "Break", type: "break" },
-
-            { start: "12:00", end: "12:45", task: "Biology Q Practice (90Q)", type: "work" },
+            { start: "12:00", end: "12:45", task: "Biology Q Practice", type: "work" }, // Target
             { start: "12:45", end: "13:00", task: "Break", type: "break" },
-
             { start: "13:00", end: "13:45", task: "Free / Meal / Rest", type: "break" },
             { start: "13:45", end: "14:00", task: "Break", type: "break" },
-
             { start: "14:00", end: "14:45", task: "Chemistry Lecture", type: "work" },
             { start: "14:45", end: "15:00", task: "Break", type: "break" },
-
-            { start: "15:00", end: "15:45", task: "Chemistry Revision", type: "work" },
+            { start: "15:00", end: "15:45", task: "Chemistry Revision", type: "work" }, // Target
             { start: "15:45", end: "16:00", task: "Break", type: "break" },
-
-            { start: "16:00", end: "16:45", task: "Chemistry Q Practice", type: "work" },
+            { start: "16:00", end: "16:45", task: "Chemistry Q Practice", type: "work" }, // Target
             { start: "16:45", end: "17:00", task: "Break", type: "break" },
-
-            { start: "17:00", end: "17:45", task: "Chemistry Q Practice", type: "work" },
+            { start: "17:00", end: "17:45", task: "Chemistry Q Practice", type: "work" }, // Target
             { start: "17:45", end: "18:00", task: "Break", type: "break" },
-
             { start: "18:00", end: "18:45", task: "Free / Reset", type: "break" },
             { start: "18:45", end: "19:00", task: "Break", type: "break" },
-
             { start: "19:00", end: "19:45", task: "Physics Lecture", type: "work" },
             { start: "19:45", end: "20:00", task: "Break", type: "break" },
-
             { start: "20:00", end: "20:45", task: "Free / Light Work", type: "break" },
             { start: "20:45", end: "21:00", task: "Break", type: "break" },
-
-            { start: "21:00", end: "21:45", task: "Physics Q Practice", type: "work" },
+            { start: "21:00", end: "21:45", task: "Physics Q Practice", type: "work" }, // Target
             { start: "21:45", end: "22:00", task: "Break", type: "break" },
-
-            { start: "22:00", end: "22:45", task: "Physics Notes", type: "work" },
+            { start: "22:00", end: "22:45", task: "Physics Notes", type: "work" }, // Target
             { start: "22:45", end: "23:00", task: "Break", type: "break" },
-
-            { start: "23:00", end: "23:45", task: "Physics Q Practice", type: "work" },
+            { start: "23:00", end: "23:45", task: "Physics Q Practice", type: "work" }, // Target
             { start: "23:45", end: "23:59", task: "Sleep Prep", type: "break" }
         ];
 
-        // --- HELPER: 24H to 12H ---
+        // Storage Key
+        const STORAGE_KEY = `protocol_logs_${new Date().toDateString()}`;
+        
+        // Load data from LocalStorage or init empty
+        let trackerData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+
+        // Helper: Is this a trackable task?
+        function isTrackable(taskName) {
+            const keywords = ["Practice", "Revision", "Notes"];
+            return keywords.some(k => taskName.includes(k));
+        }
+
         function format12(time24) {
             let [h, m] = time24.split(':').map(Number);
             const ampm = h >= 12 ? 'PM' : 'AM';
-            h = h % 12;
-            h = h ? h : 12; // 0 becomes 12
+            h = h % 12; h = h ? h : 12; 
             const mStr = m < 10 ? '0' + m : m;
             return `${h}:${mStr} ${ampm}`;
         }
@@ -266,27 +345,133 @@
             return h * 60 + m;
         }
 
+        // --- 3. RENDERING ---
         function init() {
             const container = document.getElementById('schedule-list');
+            container.innerHTML = "";
+            
             schedule.forEach((item, index) => {
                 const div = document.createElement('div');
                 div.className = 'row';
                 div.id = `slot-${index}`;
-                // Display using 12h format
+                
+                // Check if trackable
+                const trackable = isTrackable(item.task);
+                let trackerHtml = '';
+
+                if (trackable) {
+                    trackerHtml = `
+                        <div class="tracker-area" style="display:block">
+                            <div class="tracker-controls">
+                                <button class="track-btn btn-start" id="btn-${index}" onclick="toggleTracker(${index})">▶ START SESSION</button>
+                                <div class="live-timer" id="timer-${index}">00:00</div>
+                            </div>
+                            <div class="log-history" id="logs-${index}">
+                                </div>
+                        </div>
+                    `;
+                }
+
                 div.innerHTML = `
                     <div class="time">${format12(item.start)}</div>
-                    <div class="task">${item.task}</div>
+                    <div class="task-container">
+                        <div class="task-title">${item.task}</div>
+                        ${trackerHtml}
+                    </div>
                     <div class="status" id="status-${index}">WAITING</div>
                 `;
                 container.appendChild(div);
+
+                // Initialize Logs if they exist
+                if (trackable) renderLogs(index);
             });
             update();
             setInterval(update, 1000);
+            setInterval(updateTrackers, 1000); // Separate loop for manual timers
         }
 
+        // --- 4. MANUAL TRACKER LOGIC ---
+        // trackerData structure: { "index": { isRunning: bool, startTime: timestamp, logs: [seconds, seconds] } }
+
+        function toggleTracker(index) {
+            if (!trackerData[index]) {
+                trackerData[index] = { isRunning: false, startTime: null, logs: [] };
+            }
+
+            const data = trackerData[index];
+            const btn = document.getElementById(`btn-${index}`);
+
+            if (!data.isRunning) {
+                // START
+                data.isRunning = true;
+                data.startTime = Date.now();
+                btn.innerText = "⏹ STOP & LOG";
+                btn.className = "track-btn btn-stop";
+            } else {
+                // STOP & LOG
+                const elapsed = Math.floor((Date.now() - data.startTime) / 1000); // seconds
+                if (elapsed > 0) {
+                    data.logs.push(elapsed);
+                }
+                data.isRunning = false;
+                data.startTime = null;
+                
+                btn.innerText = "▶ START SESSION";
+                btn.className = "track-btn btn-start";
+                document.getElementById(`timer-${index}`).innerText = "00:00";
+                
+                renderLogs(index);
+            }
+            saveData();
+        }
+
+        function updateTrackers() {
+            // Update the live timer visuals
+            Object.keys(trackerData).forEach(idx => {
+                const data = trackerData[idx];
+                if (data.isRunning && data.startTime) {
+                    const seconds = Math.floor((Date.now() - data.startTime) / 1000);
+                    const m = Math.floor(seconds / 60);
+                    const s = seconds % 60;
+                    const el = document.getElementById(`timer-${idx}`);
+                    if(el) el.innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+                }
+            });
+        }
+
+        function renderLogs(index) {
+            if (!trackerData[index] || !trackerData[index].logs) return;
+            const logContainer = document.getElementById(`logs-${index}`);
+            if(!logContainer) return;
+
+            const logs = trackerData[index].logs;
+            if (logs.length === 0) {
+                logContainer.innerHTML = "No sessions recorded yet.";
+                return;
+            }
+
+            let html = "";
+            let totalSec = 0;
+            logs.forEach((dur, i) => {
+                totalSec += dur;
+                const m = Math.floor(dur / 60);
+                const s = dur % 60;
+                html += `<div class="log-item"><span>Session ${i+1}</span> <span>${m}m ${s}s</span></div>`;
+            });
+
+            const tm = Math.floor(totalSec / 60);
+            html += `<div class="log-item" style="color:var(--text-main); font-weight:bold; margin-top:5px; border-top:1px solid #444; padding-top:2px;"><span>TOTAL</span> <span>${tm} mins</span></div>`;
+            
+            logContainer.innerHTML = html;
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(trackerData));
+        }
+
+        // --- 5. SYSTEM CLOCK & SCROLL ---
         function update() {
             const now = new Date();
-            // Main Clock 12h
             document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { hour12: true });
 
             const currentTotalMin = now.getHours() * 60 + now.getMinutes();
@@ -302,11 +487,9 @@
                 row.classList.remove('active', 'past');
 
                 if (currentTotalMin >= startMin && currentTotalMin < endMin) {
-                    // --- ACTIVE SLOT ---
                     anyActive = true;
                     row.classList.add('active');
 
-                    // 1. CHANGE THEME
                     if (item.type === 'work') {
                         document.body.className = 'mode-work';
                         document.getElementById('mode-title').innerText = "🔥 FOCUS MODE";
@@ -315,7 +498,6 @@
                         document.getElementById('mode-title').innerText = "🌿 RECOVERY";
                     }
 
-                    // 2. COUNTDOWN
                     const endTime = new Date();
                     endTime.setHours(Math.floor(endMin / 60));
                     endTime.setMinutes(endMin % 60);
@@ -330,7 +512,6 @@
                         statusTxt.innerText = "0m 0s";
                     }
 
-                    // 3. AUTO SCROLL
                     if (!window.isScrolling) {
                         row.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
@@ -343,14 +524,12 @@
                 }
             });
             
-            // Idle State
             if (!anyActive) {
                 document.body.className = 'mode-break';
                 document.getElementById('mode-title').innerText = "SYSTEM IDLE";
             }
         }
 
-        // Handle Scroll Interaction
         window.isScrolling = false;
         let scrollTimer;
         window.addEventListener('scroll', () => {
