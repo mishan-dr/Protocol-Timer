@@ -3,506 +3,363 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TITAN COMMAND | NEET 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=JetBrains+Mono:wght@500;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <title>AIIMS Protocol App</title>
     
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#121212">
+    
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkFJSU1TIFByb3RvY29sIiwKICAic2hvcnRfbmFtZSI6ICJQcm90b2NvbCIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMTIxMjEyIiwKICAidGhlbWVfY29xvciI6ICIjZWY0NDQ0IiwKICAiaWNvbnMiOiBbXQp9">
+
     <style>
+        /* --- DYNAMIC THEME VARIABLES --- */
         :root {
-            --bg-core: #050505;
-            --bg-panel: #0f1115;
-            
-            /* High Vis Military Colors */
-            --primary: #00e5ff; /* Cyan HUD */
-            --alert: #ff1a1a;   /* Critical Red */
-            --success: #39ff14; /* Terminal Green */
-            --gold: #ffaa00;    /* Rank Gold */
-            
-            --border-dim: #2a2f3a;
-            --border-bright: #566b78;
-            
-            --text-main: #e0e6ed;
-            --text-muted: #788791;
-            
-            --font-head: 'Black Ops One', cursive; /* Stencil */
-            --font-ui: 'Rajdhani', sans-serif;
-            --font-data: 'JetBrains Mono', monospace;
+            --bg-body: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #ffffff;
+            --text-sub: #888888;
+            --accent: #ef4444; /* Red */
+            --border: #333;
+            --status-bg: rgba(239, 68, 68, 0.2);
         }
 
-        /* Color Themes */
-        body[data-theme="bio"] { --primary: #39ff14; }
-        body[data-theme="alert"] { --primary: #ff1a1a; }
+        /* --- THEME: WORK (DARK + RED) --- */
+        body.mode-work {
+            --bg-body: #0a0a0a;       
+            --bg-card: #171717;       
+            --text-main: #f5f5f5;     
+            --text-sub: #a1a1aa;      
+            --accent: #ff2a2a;        /* Neon Red */
+            --border: #333333;
+            --status-bg: rgba(220, 38, 38, 0.3);
+        }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        ::-webkit-scrollbar { width: 6px; background: #000; }
-        ::-webkit-scrollbar-thumb { background: var(--border-bright); }
+        /* --- THEME: BREAK (WHITE + GREEN) --- */
+        body.mode-break {
+            --bg-body: #f0fdf4;       /* Mint White */
+            --bg-card: #ffffff;       
+            --text-main: #14532d;     /* Dark Green Text */
+            --text-sub: #4ade80;      
+            --accent: #16a34a;        /* Strong Green */
+            --border: #bbf7d0;
+            --status-bg: #dcfce7;
+        }
 
+        /* --- LAYOUT OPTIMIZED FOR 1400x900 --- */
         body {
-            background-color: var(--bg-core);
+            background-color: var(--bg-body);
             color: var(--text-main);
-            font-family: var(--font-ui);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
             height: 100vh;
-            overflow: hidden;
-            /* Tactical Grid */
-            background-image: 
-                linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* --- LAYOUT (1440x900 Optimized) --- */
-        .hud-grid {
-            width: 100%; height: 100%;
-            display: grid;
-            grid-template-columns: 290px 1fr 280px;
-            grid-template-rows: 80px 1fr 45px;
-            gap: 15px;
-            padding: 15px;
-        }
-
-        /* --- PANEL CONSTRUCTION --- */
-        .panel {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-dim);
-            position: relative;
             display: flex;
             flex-direction: column;
-        }
-        
-        /* Corner Brackets (Military Look) */
-        .panel::before {
-            content: ''; position: absolute; top: -1px; left: -1px;
-            width: 10px; height: 10px;
-            border-top: 2px solid var(--primary); border-left: 2px solid var(--primary);
-        }
-        .panel::after {
-            content: ''; position: absolute; bottom: -1px; right: -1px;
-            width: 10px; height: 10px;
-            border-bottom: 2px solid var(--primary); border-right: 2px solid var(--primary);
+            overflow: hidden;
+            transition: background-color 0.8s ease, color 0.8s ease;
+            user-select: none; /* App-like feel */
         }
 
-        /* --- HEADER --- */
-        .header {
-            grid-column: 1 / -1;
-            flex-direction: row;
-            align-items: center;
+        header {
+            padding: 15px 50px;
+            display: flex;
             justify-content: space-between;
-            padding: 0 30px;
-            border-bottom: 2px solid var(--border-dim);
-            background: rgba(15, 17, 21, 0.95);
+            align-items: center;
+            height: 80px;
+            border-bottom: 2px solid var(--border);
+            transition: border-color 0.8s ease;
+            flex-shrink: 0;
         }
 
-        .target-box { display: flex; align-items: center; gap: 15px; }
-        .target-label { font-family: var(--font-data); font-size: 0.7rem; color: var(--alert); letter-spacing: 2px; }
-        .target-name { 
-            font-family: var(--font-head); font-size: 2rem; color: var(--text-main); 
-            text-shadow: 0 0 10px rgba(0,0,0,0.5); letter-spacing: 1px;
-        }
-        .rank-badge { 
-            background: #222; border: 1px solid var(--border-bright); 
-            color: var(--gold); padding: 4px 8px; font-family: var(--font-data); 
-            font-size: 0.8rem; font-weight: bold; 
+        .header-left h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+            color: var(--accent);
         }
 
-        .timer-center { text-align: center; }
-        .main-clock { font-family: var(--font-data); font-size: 2.8rem; font-weight: 800; color: var(--primary); line-height: 1; text-shadow: 0 0 15px rgba(0, 229, 255, 0.3); }
-        .status-light { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 8px var(--success); }
-        .clock-label { font-size: 0.8rem; letter-spacing: 3px; color: var(--text-muted); text-transform: uppercase; }
+        #clock {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            font-variant-numeric: tabular-nums;
+        }
 
-        .header-stats { text-align: right; }
-        .days-big { font-family: var(--font-head); font-size: 2.2rem; color: var(--text-main); line-height: 1; }
-        .days-sub { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        /* --- LIST CONTAINER --- */
+        .container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 40px 0;
+            scroll-behavior: smooth;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-        /* --- SIDEBARS --- */
-        .sidebar { grid-row: 2 / 3; padding: 20px; gap: 20px; }
+        .container::-webkit-scrollbar { width: 0; }
+
+        .row {
+            display: flex;
+            align-items: center;
+            width: 70%; 
+            max-width: 1000px; 
+            margin-bottom: 12px;
+            background: var(--bg-card);
+            padding: 18px 30px;
+            border-radius: 10px;
+            border-left: 5px solid transparent;
+            opacity: 0.5;
+            transition: all 0.5s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .time {
+            width: 160px; /* Wider for 12h format */
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-sub);
+        }
+
+        .task {
+            flex-grow: 1;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .status {
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-sub);
+            min-width: 140px;
+            text-align: right;
+        }
+
+        /* --- ACTIVE STATE --- */
+        .row.active {
+            opacity: 1;
+            border-left: 8px solid var(--accent);
+            background: var(--bg-card);
+            transform: scale(1.03);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .row.active .time, 
+        .row.active .task {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .row.active .status {
+            background: var(--status-bg);
+            color: var(--accent);
+            padding: 8px 15px;
+            border-radius: 6px;
+        }
+
+        /* Urgent Animation */
+        body.mode-work .row.active .status {
+            animation: breathe 2s infinite;
+        }
+        @keyframes breathe {
+            0% { opacity: 1; box-shadow: 0 0 5px var(--accent); }
+            50% { opacity: 0.7; box-shadow: 0 0 15px var(--accent); }
+            100% { opacity: 1; box-shadow: 0 0 5px var(--accent); }
+        }
+
+        /* --- PAST STATE --- */
+        .row.past {
+            opacity: 0.2;
+            filter: grayscale(100%);
+        }
         
-        .stat-card {
-            border-left: 2px solid var(--border-dim);
-            padding-left: 15px;
-            margin-bottom: 5px;
-        }
-        .stat-card.active-stat { border-left-color: var(--primary); }
-        
-        .sc-head { font-family: var(--font-head); font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px; }
-        .sc-val { font-family: var(--font-data); font-size: 1.8rem; font-weight: 800; color: var(--text-main); }
-        
-        /* Bar Design */
-        .mil-bar-bg { width: 100%; height: 8px; background: #1a1d24; border: 1px solid #333; margin-top: 5px; }
-        .mil-bar-fill { height: 100%; background: var(--primary); width: 0%; position: relative; }
-        /* Stripe effect on bar */
-        .mil-bar-fill::after {
-            content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
-            background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px);
+        /* Break Mode Specifics */
+        body.mode-break .row.active {
+            border-color: #16a34a; 
         }
 
-        .tactical-display {
-            margin-top: auto;
-            border: 1px solid var(--primary);
-            padding: 15px;
-            background: rgba(0, 229, 255, 0.05);
-        }
-        .td-title { font-size: 0.7rem; color: var(--primary); letter-spacing: 2px; font-weight: 800; margin-bottom: 5px; }
-        .td-info { font-family: var(--font-head); font-size: 1.4rem; color: var(--text-main); line-height: 1.1; }
-        .td-timer { font-family: var(--font-data); color: var(--text-muted); font-size: 1rem; margin-top: 5px; }
-
-        /* --- MAIN SCHEDULE --- */
-        .main-view { grid-row: 2 / 3; overflow: hidden; }
-        .schedule-list { flex: 1; overflow-y: auto; padding: 0; }
-        
-        .op-row {
-            display: grid; grid-template-columns: 100px 1fr 70px;
-            padding: 15px 20px; border-bottom: 1px solid var(--border-dim);
-            align-items: center; opacity: 0.5;
-        }
-        .op-row:hover { background: rgba(255,255,255,0.02); opacity: 0.8; }
-        
-        .op-row.active {
-            opacity: 1; background: rgba(0, 229, 255, 0.08);
-            border-left: 4px solid var(--primary);
-            border-bottom: 1px solid var(--primary);
-        }
-        
-        .op-time { font-family: var(--font-data); font-size: 0.8rem; color: var(--primary); }
-        .op-task { font-family: var(--font-ui); font-size: 1.1rem; font-weight: 700; color: var(--text-main); text-transform: uppercase; }
-        .op-tag { 
-            font-size: 0.65rem; font-weight: 800; text-transform: uppercase; 
-            background: #222; color: var(--text-muted); padding: 4px 0; 
-            text-align: center; border: 1px solid #444; 
-        }
-
-        /* --- RIGHT WIDGETS --- */
-        .widget { 
-            background: #15171c; border: 1px solid var(--border-dim); 
-            padding: 15px; text-align: center; 
-        }
-        .w-title { font-family: var(--font-data); font-size: 0.7rem; color: var(--alert); letter-spacing: 1px; margin-bottom: 8px; }
-        .w-big { font-family: var(--font-head); font-size: 2.5rem; color: var(--text-main); line-height: 1; }
-        .w-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; text-transform: uppercase; }
-
-        /* --- FOOTER --- */
-        .footer {
-            grid-column: 1 / -1;
-            display: flex; align-items: center; padding: 0 20px;
-            font-family: var(--font-data); font-size: 0.85rem; color: var(--primary);
-            border-top: 2px solid var(--border-dim); background: #0a0c10;
-        }
-        .cursor { display: inline-block; width: 10px; height: 18px; background: var(--primary); margin-left: 8px; animation: blink 1s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-        .theme-toggle { position: absolute; bottom: 20px; right: 20px; width: 20px; height: 20px; border-radius: 50%; border: 1px solid #555; background: transparent; cursor: pointer; }
-
-        /* --- RESPONSIVE --- */
-        @media (max-width: 1000px) {
-            .hud-grid { display: flex; flex-direction: column; height: auto; overflow-y: auto; }
-            .header { flex-direction: column; height: auto; padding: 20px; gap: 15px; }
-            .timer-center { order: -1; }
-            .main-view { height: 600px; }
-        }
     </style>
 </head>
-<body>
+<body class="mode-work">
 
-    <div class="hud-grid">
-        <header class="panel header">
-            <div class="target-box">
-                <div>
-                    <div class="target-label">PRIMARY TARGET</div>
-                    <div class="target-name">AIIMS <span id="aiimsLoc" style="color:var(--primary)">RISHIKESH</span></div>
-                </div>
-                <div class="rank-badge">SC: <span id="scRank">8240</span></div>
-            </div>
-            
-            <div class="timer-center">
-                <div class="main-clock"><span class="status-light"></span><span id="mainTimer">00:00:00</span></div>
-                <div class="clock-label" id="taskStatus">SYSTEM INITIALIZING</div>
-            </div>
+    <header>
+        <div class="header-left">
+            <h1 id="mode-title">FOCUS APP</h1>
+        </div>
+        <div class="header-right">
+            <div id="clock">12:00 PM</div>
+        </div>
+    </header>
 
-            <div class="header-stats">
-                <div class="days-big" id="daysLeft">--</div>
-                <div class="days-sub">DAYS TO MAY 02</div>
-            </div>
-        </header>
-
-        <aside class="panel sidebar">
-            <div class="stat-card active-stat">
-                <div class="sc-head">PHYSICS (180)</div>
-                <div class="sc-val" style="color:var(--primary)" id="phyVal">0</div>
-                <div class="mil-bar-bg"><div class="mil-bar-fill" id="phyBar"></div></div>
-            </div>
-            <div class="stat-card">
-                <div class="sc-head">CHEMISTRY (263)</div>
-                <div class="sc-val" style="color:var(--primary)" id="chemVal">0</div>
-                <div class="mil-bar-bg"><div class="mil-bar-fill" id="chemBar"></div></div>
-            </div>
-            <div class="stat-card">
-                <div class="sc-head">BIOLOGY (180)</div>
-                <div class="sc-val" style="color:var(--success)" id="bioVal">0</div>
-                <div class="mil-bar-bg"><div class="mil-bar-fill" style="background:var(--success)" id="bioBar"></div></div>
-            </div>
-
-            <div class="tactical-display">
-                <div class="td-title">TACTICAL PHASE</div>
-                <div class="td-info" id="subPhase">STANDBY</div>
-                <div class="td-timer" id="subTimer">--:--</div>
-            </div>
-        </aside>
-
-        <main class="panel main-view">
-            <div class="schedule-list" id="scheduleList"></div>
-        </main>
-
-        <aside class="panel sidebar" style="gap:15px;">
-            <div class="widget">
-                <div class="w-title">DAILY KILL COUNT</div>
-                <div class="w-big" id="todayCount">0 / 8</div>
-                <div class="w-sub">LECTURES EXECUTED</div>
-            </div>
-
-            <div class="widget">
-                <div class="w-title">TARGETS REMAINING</div>
-                <div class="w-big" style="color:var(--gold)" id="remLec">623</div>
-                <div class="w-sub">TOTAL LECTURES</div>
-            </div>
-
-            <div class="widget">
-                <div class="w-title">COMPLETION ETA</div>
-                <div class="w-big" style="font-size:1.8rem; color:var(--success)" id="finishDate">FEB 26</div>
-                <div class="w-sub">REVISION BUFFER: <span id="bufferDays" style="color:#fff; font-weight:bold;">65 DAYS</span></div>
-            </div>
-            
-            <button class="theme-toggle" onclick="toggleTheme()"></button>
-        </aside>
-
-        <footer class="panel footer">
-            <span style="color:var(--text-muted); margin-right:15px;">:: INTEL_STREAM ::</span>
-            <span id="typewriterText"></span><span class="cursor"></span>
-        </footer>
-    </div>
+    <div class="container" id="schedule-list">
+        </div>
 
     <script>
-        // --- DATA ---
-        const FACTS = [
-            "PHY: In SHM, Accel = -ω²x. Max at extremes.",
-            "CHEM: Stability of Carbocations: 3° > 2° > 1°.",
-            "BIO: Meiosis I: Reductional. Meiosis II: Equational.",
-            "PHY: Magnetic Field inside Solenoid B = μ₀nI.",
-            "CHEM: Electronegativity: F > O > N = Cl.",
-            "BIO: SA Node is the Pacemaker of the Heart.",
-            "PHY: 2nd Law of Thermo: Entropy of universe increases.",
-            "CHEM: Grignard Reagent + H2O -> Alkane.",
-            "BIO: Mitochondria: Powerhouse (ATP Production).",
-            "PHY: Escape Velocity Ve = √(2gR).",
-            "CHEM: Coordination Number of FCC is 12.",
-            "BIO: DNA Polymerase synthesizes 5' -> 3'.",
-            "PHY: Photoelectric Effect: Kmax = hν - φ.",
-            "CHEM: Acid Strength: HI > HBr > HCl > HF.",
-            "BIO: Nephron is the structural unit of Kidney.",
-            "PHY: Bernoulli's Theorem: Conservation of Energy (Fluids).",
-            "CHEM: Haber Process: N2 + 3H2 -> 2NH3 (Fe catalyst).",
-            "BIO: Insulin lowers blood sugar (Beta cells).",
-            "PHY: Resistance R = ρL/A.",
-            "CHEM: Graphite conducts electricity (Free electron)."
-        ];
-
-        const LOCATIONS = [
-            {n:"DELHI", r:"644"}, {n:"RISHIKESH", r:"8240"}, {n:"JODHPUR", r:"6920"}, 
-            {n:"BHOPAL", r:"7030"}, {n:"KALYANI", r:"17433"}
-        ];
-
-        const PROTOCOL = [
-            { start: "08:00", end: "08:30", task: "WAKE UP / PREP", type: "prep", video: 0 },
-            { start: "08:30", end: "10:00", task: "PHYSICS (CYCLE 1)", type: "phy", video: 1, sub: 'phy' },
-            { start: "10:00", end: "10:15", task: "BREAK", type: "break", video: 0 },
-            { start: "10:15", end: "11:45", task: "PHYSICS (CYCLE 2)", type: "phy", video: 1, sub: 'phy' },
-            { start: "11:45", end: "12:00", task: "SNACK", type: "break", video: 0 },
-            { start: "12:00", end: "13:30", task: "PHYSICS (QP ONLY)", type: "phy", video: 0 }, 
-            { start: "13:30", end: "14:00", task: "LUNCH", type: "break", video: 0 },
-            { start: "14:00", end: "15:30", task: "CHEM (PHYSICAL)", type: "chem", video: 1, sub: 'chem' },
-            { start: "15:30", end: "15:45", task: "WALK", type: "break", video: 0 },
-            { start: "15:45", end: "17:15", task: "CHEM (ORGANIC)", type: "chem", video: 1, sub: 'chem' },
-            { start: "17:15", end: "17:30", task: "WASH FACE", type: "break", video: 0 },
-            { start: "17:30", end: "19:00", task: "BIO (BOTANY)", type: "bio", video: 1, sub: 'bio' },
-            { start: "19:00", end: "19:15", task: "MUSIC", type: "break", video: 0 },
-            { start: "19:15", end: "20:45", task: "BIO (ZOOLOGY)", type: "bio", video: 1, sub: 'bio' },
-            { start: "20:45", end: "21:15", task: "DINNER", type: "break", video: 0 },
-            { start: "21:15", end: "22:45", task: "CHEM (INORGANIC)", type: "chem", video: 1, sub: 'chem' },
-            { start: "22:45", end: "23:00", task: "BREAK", type: "break", video: 0 },
-            { start: "23:00", end: "00:30", task: "BIO (CYCLE 8)", type: "bio", video: 1, sub: 'bio' },
-            { start: "00:30", end: "08:00", task: "SLEEP", type: "prep", video: 0 }
-        ];
-
-        const START_DATE = new Date("2025-12-10T00:00:00");
-        const PREP_END_DATE = new Date("2026-05-02T23:59:59");
-        const TOTAL_LEC_GOAL = 623;
-        const RATE = 8; 
-
-        // --- TYPEWRITER ---
-        let fIdx = 0, cIdx = 0, isDel = false, isWait = false;
-        const typeEl = document.getElementById("typewriterText");
-        function typeLoop() {
-            const txt = FACTS[fIdx];
-            if (isWait) return;
-            if (isDel) {
-                typeEl.innerText = txt.substring(0, cIdx - 1); cIdx--;
-                if (cIdx === 0) { isDel = false; fIdx = (fIdx + 1) % FACTS.length; }
-                setTimeout(typeLoop, 20);
-            } else {
-                typeEl.innerText = txt.substring(0, cIdx + 1); cIdx++;
-                if (cIdx === txt.length) { isWait = true; setTimeout(() => { isWait = false; isDel = true; typeLoop(); }, 10000); }
-                else setTimeout(typeLoop, 40);
-            }
-        }
-        typeLoop();
-
-        // --- UTILS ---
-        const THEMES = [null, "bio", "alert"];
-        let tIdx = 0;
-        function toggleTheme() {
-            tIdx = (tIdx + 1) % THEMES.length;
-            if(THEMES[tIdx]) document.body.setAttribute("data-theme", THEMES[tIdx]);
-            else document.body.removeAttribute("data-theme");
-        }
-
-        function formatTime(t) {
-            let [h, m] = t.split(':').map(Number);
-            const am = h >= 12 ? 'PM' : 'AM';
-            h = h % 12 || 12;
-            return `${h}:${String(m).padStart(2,'0')} ${am}`;
-        }
-        function getMins(t) {
-            const [h, m] = t.split(':').map(Number);
-            let val = h*60 + m - 480; 
-            if(val < 0) val += 1440;
-            return val;
-        }
-        function pad(n) { return n < 10 ? '0'+n : n; }
-
-        // --- STRATEGY ---
-        function runStrategy() {
-            const daysToFinish = Math.ceil(TOTAL_LEC_GOAL / RATE);
-            const finishDate = new Date(START_DATE.getTime() + (daysToFinish * 24 * 60 * 60 * 1000));
-            const mNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN"];
-            document.getElementById('finishDate').innerText = `${mNames[finishDate.getMonth()]} ${finishDate.getDate()}`;
+        // --- 45/15 PROTOCOL (Internal Logic uses 24h for math, Display uses 12h) ---
+        const schedule = [
+            { start: "08:00", end: "08:45", task: "Biology Lecture", type: "work" },
+            { start: "08:45", end: "09:00", task: "Break (Refill Water)", type: "break" },
             
-            const diffTime = PREP_END_DATE - finishDate;
-            const bufferDays = Math.floor(diffTime / 86400000);
-            document.getElementById('bufferDays').innerText = (bufferDays > 0 ? bufferDays : 0) + " DAYS";
+            { start: "09:00", end: "09:45", task: "Biology Lecture", type: "work" },
+            { start: "09:45", end: "10:00", task: "Break", type: "break" },
+
+            { start: "10:00", end: "10:45", task: "Biology Lecture", type: "work" },
+            { start: "10:45", end: "11:00", task: "Break", type: "break" },
+
+            { start: "11:00", end: "11:45", task: "Biology Revision", type: "work" },
+            { start: "11:45", end: "12:00", task: "Break", type: "break" },
+
+            { start: "12:00", end: "12:45", task: "Biology Q Practice (90Q)", type: "work" },
+            { start: "12:45", end: "13:00", task: "Break", type: "break" },
+
+            { start: "13:00", end: "13:45", task: "Free / Meal / Rest", type: "break" },
+            { start: "13:45", end: "14:00", task: "Break", type: "break" },
+
+            { start: "14:00", end: "14:45", task: "Chemistry Lecture", type: "work" },
+            { start: "14:45", end: "15:00", task: "Break", type: "break" },
+
+            { start: "15:00", end: "15:45", task: "Chemistry Revision", type: "work" },
+            { start: "15:45", end: "16:00", task: "Break", type: "break" },
+
+            { start: "16:00", end: "16:45", task: "Chemistry Q Practice", type: "work" },
+            { start: "16:45", end: "17:00", task: "Break", type: "break" },
+
+            { start: "17:00", end: "17:45", task: "Chemistry Q Practice", type: "work" },
+            { start: "17:45", end: "18:00", task: "Break", type: "break" },
+
+            { start: "18:00", end: "18:45", task: "Free / Reset", type: "break" },
+            { start: "18:45", end: "19:00", task: "Break", type: "break" },
+
+            { start: "19:00", end: "19:45", task: "Physics Lecture", type: "work" },
+            { start: "19:45", end: "20:00", task: "Break", type: "break" },
+
+            { start: "20:00", end: "20:45", task: "Free / Light Work", type: "break" },
+            { start: "20:45", end: "21:00", task: "Break", type: "break" },
+
+            { start: "21:00", end: "21:45", task: "Physics Q Practice", type: "work" },
+            { start: "21:45", end: "22:00", task: "Break", type: "break" },
+
+            { start: "22:00", end: "22:45", task: "Physics Notes", type: "work" },
+            { start: "22:45", end: "23:00", task: "Break", type: "break" },
+
+            { start: "23:00", end: "23:45", task: "Physics Q Practice", type: "work" },
+            { start: "23:45", end: "23:59", task: "Sleep Prep", type: "break" }
+        ];
+
+        // --- HELPER: 24H to 12H ---
+        function format12(time24) {
+            let [h, m] = time24.split(':').map(Number);
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12;
+            h = h ? h : 12; // 0 becomes 12
+            const mStr = m < 10 ? '0' + m : m;
+            return `${h}:${mStr} ${ampm}`;
         }
-        runStrategy();
 
-        // --- TICK ---
-        function tick() {
-            const now = new Date();
-            const sec = Math.floor(Date.now() / 1000);
+        function getMinutes(timeStr) {
+            const [h, m] = timeStr.split(':').map(Number);
+            return h * 60 + m;
+        }
 
-            // Carousel
-            const loc = LOCATIONS[Math.floor(sec/4) % LOCATIONS.length];
-            document.getElementById('aiimsLoc').innerText = loc.n;
-            document.getElementById('scRank').innerText = loc.r;
-
-            // Days Left (Target May 2)
-            document.getElementById('daysLeft').innerText = Math.max(0, Math.ceil((PREP_END_DATE - now) / 86400000));
-
-            // Schedule
-            let curMins = now.getHours() * 60 + now.getMinutes();
-            let adjCur = curMins - 480; if(adjCur < 0) adjCur += 1440;
-
-            let html = "", activeEl = null;
-
-            PROTOCOL.forEach((item, idx) => {
-                const s = getMins(item.start);
-                let e = getMins(item.end); if(e < s) e += 1440;
-
-                let state = "";
-                if(adjCur >= s && adjCur < e) {
-                    state = "active";
-                    activeEl = "task-" + idx;
-                    
-                    let remMins = e - adjCur - 1;
-                    let remSecs = 59 - now.getSeconds();
-                    document.getElementById('mainTimer').innerText = `${pad(Math.floor(remMins/60))}:${pad(remMins%60)}:${pad(remSecs)}`;
-                    document.getElementById('taskStatus').innerText = "ENGAGED: " + item.task;
-
-                    if(item.video) {
-                        let elapsed = adjCur - s;
-                        let phName = "", phTime = 0;
-                        if(elapsed < 45) { phName="VIDEO LECTURE"; phTime = 45 - elapsed; }
-                        else if(elapsed < 70) { phName="QUESTION PRACTICE"; phTime = 70 - elapsed; }
-                        else { phName="ACTIVE REVISION"; phTime = 90 - elapsed; }
-                        
-                        document.getElementById('subPhase').innerText = phName;
-                        document.getElementById('subTimer').innerText = `T-MINUS ${phTime}m ${remSecs}s`;
-                    } else {
-                        document.getElementById('subPhase').innerText = item.type.toUpperCase() + " MODE";
-                        document.getElementById('subTimer').innerText = "IN PROGRESS";
-                    }
-                } else if (adjCur >= e) {
-                    state = "done";
-                }
-
-                let colorClass = '#788791';
-                if(item.type==='phy') colorClass='var(--alert)';
-                if(item.type==='chem') colorClass='var(--primary)';
-                if(item.type==='bio') colorClass='var(--success)';
-
-                html += `
-                    <div id="task-${idx}" class="op-row ${state}">
-                        <div class="op-time">${formatTime(item.start)}</div>
-                        <div class="op-task">${item.task}</div>
-                        <div class="op-tag" style="color:${colorClass}; border-color:${colorClass}">${item.type}</div>
-                    </div>
+        function init() {
+            const container = document.getElementById('schedule-list');
+            schedule.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'row';
+                div.id = `slot-${index}`;
+                // Display using 12h format
+                div.innerHTML = `
+                    <div class="time">${format12(item.start)}</div>
+                    <div class="task">${item.task}</div>
+                    <div class="status" id="status-${index}">WAITING</div>
                 `;
+                container.appendChild(div);
             });
-            document.getElementById('scheduleList').innerHTML = html;
-
-            if(activeEl) {
-                const el = document.getElementById(activeEl);
-                if(el) {
-                     const rect = el.getBoundingClientRect();
-                     const container = document.getElementById('scheduleList').getBoundingClientRect();
-                     if (rect.top < container.top || rect.bottom > container.bottom) {
-                         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                     }
-                }
-            } else {
-                document.getElementById('mainTimer').innerText = "--:--:--";
-                document.getElementById('taskStatus').innerText = "BUFFER ZONE";
-            }
-
-            // Counters
-            const timeSinceStart = now - START_DATE;
-            let daysPassed = Math.floor(timeSinceStart / 86400000);
-            if(daysPassed < 0) daysPassed = -1;
-
-            let p=0, c=0, b=0, todayDone=0;
-
-            if(daysPassed >= 0) {
-                p = daysPassed * 2; c = daysPassed * 3; b = daysPassed * 3;
-                PROTOCOL.forEach(s => {
-                    if(s.video) {
-                         let e = getMins(s.end); if(e < getMins(s.start)) e+=1440;
-                         if(adjCur >= e) {
-                             if(s.sub==='phy') p++; if(s.sub==='chem') c++; if(s.sub==='bio') b++;
-                             todayDone++;
-                         }
-                    }
-                });
-            }
-
-            document.getElementById('phyVal').innerText = p; document.getElementById('phyBar').style.width = Math.min(100, (p/180)*100)+"%";
-            document.getElementById('chemVal').innerText = c; document.getElementById('chemBar').style.width = Math.min(100, (c/263)*100)+"%";
-            document.getElementById('bioVal').innerText = b; document.getElementById('bioBar').style.width = Math.min(100, (b/180)*100)+"%";
-            
-            document.getElementById('todayCount').innerText = `${todayDone} / 8`;
-            let totalDone = p + c + b;
-            document.getElementById('remLec').innerText = Math.max(0, TOTAL_LEC_GOAL - totalDone);
+            update();
+            setInterval(update, 1000);
         }
 
-        setInterval(tick, 1000);
-        tick();
+        function update() {
+            const now = new Date();
+            // Main Clock 12h
+            document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { hour12: true });
 
+            const currentTotalMin = now.getHours() * 60 + now.getMinutes();
+            let anyActive = false;
+
+            schedule.forEach((item, index) => {
+                const row = document.getElementById(`slot-${index}`);
+                const statusTxt = document.getElementById(`status-${index}`);
+                
+                const startMin = getMinutes(item.start);
+                const endMin = getMinutes(item.end);
+
+                row.classList.remove('active', 'past');
+
+                if (currentTotalMin >= startMin && currentTotalMin < endMin) {
+                    // --- ACTIVE SLOT ---
+                    anyActive = true;
+                    row.classList.add('active');
+
+                    // 1. CHANGE THEME
+                    if (item.type === 'work') {
+                        document.body.className = 'mode-work';
+                        document.getElementById('mode-title').innerText = "🔥 FOCUS MODE";
+                    } else {
+                        document.body.className = 'mode-break';
+                        document.getElementById('mode-title').innerText = "🌿 RECOVERY";
+                    }
+
+                    // 2. COUNTDOWN
+                    const endTime = new Date();
+                    endTime.setHours(Math.floor(endMin / 60));
+                    endTime.setMinutes(endMin % 60);
+                    endTime.setSeconds(0);
+                    const diff = endTime - now;
+                    
+                    if (diff > 0) {
+                        const m = Math.floor((diff / 1000 / 60) % 60);
+                        const s = Math.floor((diff / 1000) % 60);
+                        statusTxt.innerText = `${m}m ${s}s`;
+                    } else {
+                        statusTxt.innerText = "0m 0s";
+                    }
+
+                    // 3. AUTO SCROLL
+                    if (!window.isScrolling) {
+                        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+
+                } else if (currentTotalMin >= endMin) {
+                    row.classList.add('past');
+                    statusTxt.innerText = "DONE";
+                } else {
+                    statusTxt.innerText = "UPCOMING";
+                }
+            });
+            
+            // Idle State
+            if (!anyActive) {
+                document.body.className = 'mode-break';
+                document.getElementById('mode-title').innerText = "SYSTEM IDLE";
+            }
+        }
+
+        // Handle Scroll Interaction
+        window.isScrolling = false;
+        let scrollTimer;
+        window.addEventListener('scroll', () => {
+            window.isScrolling = true;
+            clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(() => window.isScrolling = false, 5000);
+        }, true);
+
+        init();
     </script>
 </body>
 </html>
