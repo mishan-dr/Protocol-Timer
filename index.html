@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protocol + Accountability Tracker</title>
+    <title>Protocol: Permanent Logs</title>
     
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,11 +20,10 @@
             --accent: #ef4444; /* Red */
             --border: #333;
             --status-bg: rgba(239, 68, 68, 0.2);
-            --btn-start: #10b981; /* Green */
-            --btn-stop: #ef4444; /* Red */
+            --btn-start: #10b981; 
+            --btn-stop: #ef4444; 
         }
 
-        /* --- THEME: WORK (DARK + RED) --- */
         body.mode-work {
             --bg-body: #0a0a0a;       
             --bg-card: #171717;       
@@ -35,7 +34,6 @@
             --status-bg: rgba(220, 38, 38, 0.3);
         }
 
-        /* --- THEME: BREAK (WHITE + GREEN) --- */
         body.mode-break {
             --bg-body: #f0fdf4;       
             --bg-card: #ffffff;       
@@ -109,7 +107,7 @@
 
         .row {
             display: flex;
-            align-items: flex-start; /* Align top for logs */
+            align-items: flex-start;
             width: 70%; 
             max-width: 1000px; 
             margin-bottom: 12px;
@@ -117,7 +115,7 @@
             padding: 18px 30px;
             border-radius: 10px;
             border-left: 5px solid transparent;
-            opacity: 0.5;
+            opacity: 0.6; /* Increased visibility for past items */
             transition: all 0.5s ease;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
@@ -151,13 +149,14 @@
             padding-top: 5px;
         }
 
-        /* --- MANUAL TRACKER STYLES --- */
+        /* --- TRACKER UI --- */
         .tracker-area {
             margin-top: 10px;
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
+            padding: 12px;
+            background: rgba(0,0,0,0.3); /* Darker background for contrast */
             border-radius: 8px;
-            display: none; /* Hidden by default, shown for Q/Revision */
+            display: none; 
+            border: 1px solid rgba(255,255,255,0.05);
         }
         
         .tracker-controls {
@@ -183,22 +182,23 @@
 
         .live-timer {
             font-family: monospace;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             font-weight: bold;
             color: var(--accent);
         }
 
         .log-history {
             margin-top: 10px;
-            font-size: 0.85rem;
-            color: var(--text-sub);
+            font-size: 0.9rem;
+            color: #ccc;
             border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 5px;
+            padding-top: 8px;
         }
         .log-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
+            font-family: monospace;
         }
 
         /* --- ACTIVE STATE --- */
@@ -241,13 +241,28 @@
         }
 
         .row.past {
-            opacity: 0.2;
-            filter: grayscale(100%);
+            opacity: 0.5; /* Keeps logs visible even when passed */
+            filter: grayscale(80%);
         }
         
         body.mode-break .row.active {
             border-color: #16a34a; 
         }
+
+        /* RESET BUTTON */
+        #reset-zone {
+            padding: 30px;
+            margin-bottom: 50px;
+        }
+        #btn-reset {
+            background: #333;
+            color: #666;
+            border: 1px solid #444;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #btn-reset:hover { background: #444; color: #fff; }
 
     </style>
 </head>
@@ -265,6 +280,10 @@
 
     <div class="container" id="schedule-list">
         </div>
+    
+    <div id="reset-zone">
+        <button id="btn-reset" onclick="resetAllData()">🗑 RESET DATA (Start New Day)</button>
+    </div>
 
     <script>
         // --- 1. WAKE LOCK ---
@@ -292,19 +311,19 @@
             { start: "09:45", end: "10:00", task: "Break", type: "break" },
             { start: "10:00", end: "10:45", task: "Biology Lecture", type: "work" },
             { start: "10:45", end: "11:00", task: "Break", type: "break" },
-            { start: "11:00", end: "11:45", task: "Biology Revision", type: "work" }, // Target
+            { start: "11:00", end: "11:45", task: "Biology Revision", type: "work" }, 
             { start: "11:45", end: "12:00", task: "Break", type: "break" },
-            { start: "12:00", end: "12:45", task: "Biology Q Practice", type: "work" }, // Target
+            { start: "12:00", end: "12:45", task: "Biology Q Practice", type: "work" }, 
             { start: "12:45", end: "13:00", task: "Break", type: "break" },
             { start: "13:00", end: "13:45", task: "Free / Meal / Rest", type: "break" },
             { start: "13:45", end: "14:00", task: "Break", type: "break" },
             { start: "14:00", end: "14:45", task: "Chemistry Lecture", type: "work" },
             { start: "14:45", end: "15:00", task: "Break", type: "break" },
-            { start: "15:00", end: "15:45", task: "Chemistry Revision", type: "work" }, // Target
+            { start: "15:00", end: "15:45", task: "Chemistry Revision", type: "work" }, 
             { start: "15:45", end: "16:00", task: "Break", type: "break" },
-            { start: "16:00", end: "16:45", task: "Chemistry Q Practice", type: "work" }, // Target
+            { start: "16:00", end: "16:45", task: "Chemistry Q Practice", type: "work" }, 
             { start: "16:45", end: "17:00", task: "Break", type: "break" },
-            { start: "17:00", end: "17:45", task: "Chemistry Q Practice", type: "work" }, // Target
+            { start: "17:00", end: "17:45", task: "Chemistry Q Practice", type: "work" }, 
             { start: "17:45", end: "18:00", task: "Break", type: "break" },
             { start: "18:00", end: "18:45", task: "Free / Reset", type: "break" },
             { start: "18:45", end: "19:00", task: "Break", type: "break" },
@@ -312,21 +331,19 @@
             { start: "19:45", end: "20:00", task: "Break", type: "break" },
             { start: "20:00", end: "20:45", task: "Free / Light Work", type: "break" },
             { start: "20:45", end: "21:00", task: "Break", type: "break" },
-            { start: "21:00", end: "21:45", task: "Physics Q Practice", type: "work" }, // Target
+            { start: "21:00", end: "21:45", task: "Physics Q Practice", type: "work" }, 
             { start: "21:45", end: "22:00", task: "Break", type: "break" },
-            { start: "22:00", end: "22:45", task: "Physics Notes", type: "work" }, // Target
+            { start: "22:00", end: "22:45", task: "Physics Notes", type: "work" }, 
             { start: "22:45", end: "23:00", task: "Break", type: "break" },
-            { start: "23:00", end: "23:45", task: "Physics Q Practice", type: "work" }, // Target
+            { start: "23:00", end: "23:45", task: "Physics Q Practice", type: "work" }, 
             { start: "23:45", end: "23:59", task: "Sleep Prep", type: "break" }
         ];
 
-        // Storage Key
-        const STORAGE_KEY = `protocol_logs_${new Date().toDateString()}`;
+        // FIXED KEY: DOES NOT CHANGE WITH DATE
+        const STORAGE_KEY = "protocol_permanent_storage_v1";
         
-        // Load data from LocalStorage or init empty
         let trackerData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
 
-        // Helper: Is this a trackable task?
         function isTrackable(taskName) {
             const keywords = ["Practice", "Revision", "Notes"];
             return keywords.some(k => taskName.includes(k));
@@ -355,7 +372,10 @@
                 div.className = 'row';
                 div.id = `slot-${index}`;
                 
-                // Check if trackable
+                // Create Unique ID for Data Storage (Task Name + Start Time)
+                // This ensures data stays attached to the specific slot forever
+                const uniqueId = `${item.task}_${item.start}`;
+                
                 const trackable = isTrackable(item.task);
                 let trackerHtml = '';
 
@@ -363,10 +383,10 @@
                     trackerHtml = `
                         <div class="tracker-area" style="display:block">
                             <div class="tracker-controls">
-                                <button class="track-btn btn-start" id="btn-${index}" onclick="toggleTracker(${index})">▶ START SESSION</button>
-                                <div class="live-timer" id="timer-${index}">00:00</div>
+                                <button class="track-btn btn-start" id="btn-${uniqueId}" onclick="toggleTracker('${uniqueId}')">▶ START SESSION</button>
+                                <div class="live-timer" id="timer-${uniqueId}">00:00</div>
                             </div>
-                            <div class="log-history" id="logs-${index}">
+                            <div class="log-history" id="logs-${uniqueId}">
                                 </div>
                         </div>
                     `;
@@ -382,24 +402,21 @@
                 `;
                 container.appendChild(div);
 
-                // Initialize Logs if they exist
-                if (trackable) renderLogs(index);
+                if (trackable) renderLogs(uniqueId);
             });
             update();
             setInterval(update, 1000);
-            setInterval(updateTrackers, 1000); // Separate loop for manual timers
+            setInterval(updateTrackers, 1000); 
         }
 
         // --- 4. MANUAL TRACKER LOGIC ---
-        // trackerData structure: { "index": { isRunning: bool, startTime: timestamp, logs: [seconds, seconds] } }
-
-        function toggleTracker(index) {
-            if (!trackerData[index]) {
-                trackerData[index] = { isRunning: false, startTime: null, logs: [] };
+        function toggleTracker(uniqueId) {
+            if (!trackerData[uniqueId]) {
+                trackerData[uniqueId] = { isRunning: false, startTime: null, logs: [] };
             }
 
-            const data = trackerData[index];
-            const btn = document.getElementById(`btn-${index}`);
+            const data = trackerData[uniqueId];
+            const btn = document.getElementById(`btn-${uniqueId}`);
 
             if (!data.isRunning) {
                 // START
@@ -409,7 +426,7 @@
                 btn.className = "track-btn btn-stop";
             } else {
                 // STOP & LOG
-                const elapsed = Math.floor((Date.now() - data.startTime) / 1000); // seconds
+                const elapsed = Math.floor((Date.now() - data.startTime) / 1000); 
                 if (elapsed > 0) {
                     data.logs.push(elapsed);
                 }
@@ -418,35 +435,43 @@
                 
                 btn.innerText = "▶ START SESSION";
                 btn.className = "track-btn btn-start";
-                document.getElementById(`timer-${index}`).innerText = "00:00";
+                document.getElementById(`timer-${uniqueId}`).innerText = "00:00";
                 
-                renderLogs(index);
+                renderLogs(uniqueId);
             }
             saveData();
         }
 
         function updateTrackers() {
-            // Update the live timer visuals
-            Object.keys(trackerData).forEach(idx => {
-                const data = trackerData[idx];
+            Object.keys(trackerData).forEach(uid => {
+                const data = trackerData[uid];
                 if (data.isRunning && data.startTime) {
                     const seconds = Math.floor((Date.now() - data.startTime) / 1000);
                     const m = Math.floor(seconds / 60);
                     const s = seconds % 60;
-                    const el = document.getElementById(`timer-${idx}`);
+                    const el = document.getElementById(`timer-${uid}`);
                     if(el) el.innerText = `${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+                }
+                
+                // Keep button state correct if page reloaded
+                if (data.isRunning) {
+                     const btn = document.getElementById(`btn-${uid}`);
+                     if(btn && btn.innerText.includes("START")) {
+                         btn.innerText = "⏹ STOP & LOG";
+                         btn.className = "track-btn btn-stop";
+                     }
                 }
             });
         }
 
-        function renderLogs(index) {
-            if (!trackerData[index] || !trackerData[index].logs) return;
-            const logContainer = document.getElementById(`logs-${index}`);
+        function renderLogs(uniqueId) {
+            if (!trackerData[uniqueId]) return;
+            const logContainer = document.getElementById(`logs-${uniqueId}`);
             if(!logContainer) return;
 
-            const logs = trackerData[index].logs;
-            if (logs.length === 0) {
-                logContainer.innerHTML = "No sessions recorded yet.";
+            const logs = trackerData[uniqueId].logs;
+            if (!logs || logs.length === 0) {
+                logContainer.innerHTML = "No sessions recorded.";
                 return;
             }
 
@@ -460,7 +485,7 @@
             });
 
             const tm = Math.floor(totalSec / 60);
-            html += `<div class="log-item" style="color:var(--text-main); font-weight:bold; margin-top:5px; border-top:1px solid #444; padding-top:2px;"><span>TOTAL</span> <span>${tm} mins</span></div>`;
+            html += `<div class="log-item" style="color:var(--text-main); font-weight:bold; margin-top:5px; border-top:1px solid #555; padding-top:4px;"><span>TOTAL TIME</span> <span>${tm} mins</span></div>`;
             
             logContainer.innerHTML = html;
         }
@@ -469,7 +494,14 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(trackerData));
         }
 
-        // --- 5. SYSTEM CLOCK & SCROLL ---
+        function resetAllData() {
+            if(confirm("Are you sure you want to delete all history and start a new day?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
+        }
+
+        // --- 5. SYSTEM LOGIC ---
         function update() {
             const now = new Date();
             document.getElementById('clock').innerText = now.toLocaleTimeString('en-US', { hour12: true });
