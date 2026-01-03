@@ -8,8 +8,8 @@
         :root {
             --bg-color: #050505;
             --text-color: #e0e0e0;
-            --accent-color: #4caf50; /* Green for Stopwatch */
-            --alert-color: #f44336;
+            --accent-color: #4caf50;
+            --alert-color: #ff3d00;
             --highlight-bg: #1a1a1a;
             --border-color: #333;
             --dim-text: #666;
@@ -25,9 +25,25 @@
             display: grid;
             grid-template-rows: auto 1fr;
             overflow: hidden;
+            transition: background-color 0.2s;
         }
 
-        /* HEADER: System Time + Auto-Countdown */
+        /* START OVERLAY (For Audio Permission) */
+        #start-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        #start-overlay h1 { font-size: 2rem; color: #fff; margin-bottom: 20px; }
+        #start-overlay p { color: #888; }
+
+        /* HEADER */
         header {
             display: flex;
             justify-content: space-between;
@@ -39,27 +55,19 @@
 
         .system-time { font-size: 1.5rem; font-weight: bold; color: #fff; }
         
-        .slot-timer-container {
-            text-align: right;
-        }
-        
+        .slot-timer-container { text-align: right; }
         .slot-label { font-size: 0.8rem; color: var(--dim-text); text-transform: uppercase; }
-        
-        #slot-countdown {
-            font-size: 2rem;
-            color: var(--alert-color); /* Red to indicate urgency/deadline */
-            font-weight: bold;
-        }
+        #slot-countdown { font-size: 2rem; color: var(--alert-color); font-weight: bold; }
 
         /* MAIN LAYOUT */
         main {
             display: grid;
-            grid-template-columns: 300px 1fr;
+            grid-template-columns: 320px 1fr;
             height: 100%;
             overflow: hidden;
         }
 
-        /* SIDEBAR: Schedule */
+        /* SIDEBAR */
         aside {
             border-right: 1px solid var(--border-color);
             overflow-y: auto;
@@ -73,6 +81,7 @@
             justify-content: space-between;
             font-size: 0.85rem;
             color: var(--dim-text);
+            transition: all 0.3s;
         }
 
         .schedule-item.active {
@@ -80,17 +89,15 @@
             border-left: 4px solid var(--accent-color);
             color: #fff;
         }
+        
+        .time-col { font-weight: bold; margin-right: 10px; min-width: 85px; }
 
-        .schedule-item.completed { text-decoration: line-through; opacity: 0.4; }
-        .time-col { font-weight: bold; margin-right: 10px; min-width: 80px; }
-
-        /* CENTER: Stopwatch & Logs */
+        /* WORK ZONE */
         #work-zone {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: start;
-            padding-top: 50px;
+            padding-top: 60px;
             position: relative;
         }
 
@@ -107,6 +114,7 @@
             font-weight: bold;
             margin-bottom: 40px;
             text-align: center;
+            padding: 0 20px;
         }
 
         /* STOPWATCH */
@@ -119,9 +127,7 @@
             text-shadow: 0 0 20px rgba(76, 175, 80, 0.2);
         }
 
-        .controls { display: flex; gap: 15px; margin-bottom: 40px; }
-
-        button {
+        .controls button {
             background: transparent;
             border: 1px solid var(--text-color);
             color: var(--text-color);
@@ -130,41 +136,51 @@
             font-size: 1rem;
             cursor: pointer;
             text-transform: uppercase;
-            transition: all 0.2s;
+            margin: 0 10px;
         }
 
-        button:hover { background: var(--text-color); color: #000; }
-        
-        button.primary {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-        }
-        button.primary:hover { background: var(--accent-color); color: #000; }
+        .controls button:hover { background: var(--text-color); color: #000; }
+        .controls button.primary { border-color: var(--accent-color); color: var(--accent-color); }
+        .controls button.primary:hover { background: var(--accent-color); color: #000; }
 
-        /* LOGS TABLE */
+        /* LOGS */
         #log-container {
             width: 80%;
-            max-height: 250px;
-            overflow-y: auto;
+            margin-top: 40px;
             border-top: 1px solid var(--border-color);
+            max-height: 200px;
+            overflow-y: auto;
         }
-        
         .log-entry {
             display: flex;
             justify-content: space-between;
             padding: 10px;
             border-bottom: 1px solid #222;
-            font-size: 0.9rem;
             color: var(--dim-text);
+            font-size: 0.9rem;
         }
-        .log-entry span:last-child { color: var(--accent-color); }
 
         /* SCROLLBAR */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #333; }
+        
+        /* ALARM FLASH ANIMATION */
+        .alarm-flash {
+            animation: flashScreen 0.5s ease-in-out;
+        }
+        @keyframes flashScreen {
+            0% { background-color: var(--bg-color); }
+            50% { background-color: #333; }
+            100% { background-color: var(--bg-color); }
+        }
     </style>
 </head>
 <body>
+
+    <div id="start-overlay" onclick="startSystem()">
+        <h1>NEET DASHBOARD</h1>
+        <p>[ CLICK ANYWHERE TO INITIALIZE SYSTEM & ALARMS ]</p>
+    </div>
 
     <header>
         <div>
@@ -172,7 +188,7 @@
             <div style="font-size: 0.8rem; color: #666;">SYSTEM TIME</div>
         </div>
         <div class="slot-timer-container">
-            <div class="slot-label">Slot Ends In</div>
+            <div class="slot-label">Next Switch In</div>
             <div id="slot-countdown">--:--</div>
         </div>
     </header>
@@ -182,17 +198,16 @@
 
         <div id="work-zone">
             <div id="current-task-display">Current Focus</div>
-            <div id="big-task-name">Initializing...</div>
+            <div id="big-task-name">Waiting to Start...</div>
 
             <div id="stopwatch">00:00:00</div>
 
             <div class="controls">
-                <button onclick="toggleStopwatch()" id="sw-btn">START</button>
-                <button class="primary" onclick="logAndReset()">LOG & RESET</button>
+                <button onclick="toggleStopwatch()" id="sw-btn">START WATCH</button>
+                <button class="primary" onclick="logAndReset()">LOG WORK</button>
             </div>
 
-            <div id="log-container">
-                </div>
+            <div id="log-container"></div>
         </div>
     </main>
 
@@ -232,20 +247,39 @@
         ];
 
         // --- STATE ---
-        let currentSlot = null;
+        let currentSlotIndex = -1;
         let swInterval = null;
         let swSeconds = 0;
         let swRunning = false;
+        let audioCtx = null;
 
-        // --- INIT ---
+        // --- STARTUP ---
+        function startSystem() {
+            // Unlock AudioContext
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Remove Overlay
+            document.getElementById('start-overlay').style.display = 'none';
+            
+            // Go Fullscreen
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(e => console.log(e));
+            }
+
+            init();
+            
+            // Play a quiet confirmation beep
+            beep(0, 600, 0.1); 
+        }
+
         function init() {
             renderSchedule();
             updateSystem();
-            setInterval(updateSystem, 1000); // Main Heartbeat
+            setInterval(updateSystem, 1000); 
             loadLogs();
         }
 
-        // --- SCHEDULE LOGIC ---
+        // --- SCHEDULE ENGINE ---
         function renderSchedule() {
             const list = document.getElementById('schedule-list');
             list.innerHTML = schedule.map((item, i) => `
@@ -260,11 +294,11 @@
             const now = new Date();
             const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
             
-            // 1. Update Clock
+            // 1. Clock
             document.getElementById('clock').innerText = now.toLocaleTimeString('en-GB');
 
-            // 2. Find Active Slot & Update Countdown
-            let activeIndex = -1;
+            // 2. Schedule Matching
+            let foundIndex = -1;
             
             schedule.forEach((item, i) => {
                 const startSec = timeToSec(item.s);
@@ -272,33 +306,71 @@
                 const el = document.getElementById(`slot-${i}`);
 
                 if (nowSec >= startSec && nowSec < endSec) {
-                    activeIndex = i;
+                    foundIndex = i;
                     el.classList.add('active');
                     
-                    // Update Slot Info
-                    if(currentSlot !== i) {
-                        currentSlot = i;
-                        document.getElementById('big-task-name').innerText = item.t;
-                        el.scrollIntoView({behavior: "smooth", block: "center"});
-                        playAlarm(); // Alarm on slot change
-                    }
-
-                    // Auto Countdown (Top Right)
+                    // Countdown
                     const diff = endSec - nowSec;
                     const m = Math.floor(diff / 60);
                     const s = diff % 60;
-                    document.getElementById('slot-countdown').innerText = 
-                        `${pad(m)}:${pad(s)}`;
-                        
+                    document.getElementById('slot-countdown').innerText = `${pad(m)}:${pad(s)}`;
                 } else {
                     el.classList.remove('active');
                 }
             });
 
-            if (activeIndex === -1) {
-                document.getElementById('slot-countdown').innerText = "SLEEP";
-                document.getElementById('big-task-name').innerText = "Rest / Sleep Zone";
+            // 3. Detect Transition (Alarm Trigger)
+            if (foundIndex !== currentSlotIndex) {
+                // If this isn't the very first load (-1), play alarm
+                if (currentSlotIndex !== -1 && audioCtx) {
+                    triggerTransitionAlarm();
+                }
+                
+                currentSlotIndex = foundIndex;
+                
+                // Update UI
+                if (foundIndex !== -1) {
+                    const item = schedule[foundIndex];
+                    document.getElementById('big-task-name').innerText = item.t;
+                    document.getElementById(`slot-${foundIndex}`).scrollIntoView({behavior: "smooth", block: "center"});
+                } else {
+                    document.getElementById('big-task-name').innerText = "SLEEP / RECOVERY";
+                    document.getElementById('slot-countdown').innerText = "--:--";
+                }
             }
+        }
+
+        // --- ALARM SYSTEM ---
+        function triggerTransitionAlarm() {
+            // Visual Flash
+            document.body.classList.add('alarm-flash');
+            setTimeout(() => document.body.classList.remove('alarm-flash'), 500);
+
+            // Audio Alarm (Triple Beep)
+            // Beep 1
+            beep(0, 880, 0.1);
+            // Beep 2
+            beep(0.2, 880, 0.1);
+            // Beep 3 (Longer, higher)
+            beep(0.4, 1100, 0.4);
+        }
+
+        function beep(delay, freq, duration) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.frequency.value = freq;
+            osc.type = "square"; // "square" is louder/sharper than sine
+            
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime + delay);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + delay + duration);
+            
+            osc.start(audioCtx.currentTime + delay);
+            osc.stop(audioCtx.currentTime + delay + duration);
         }
 
         // --- STOPWATCH LOGIC ---
@@ -322,33 +394,28 @@
             const h = Math.floor(swSeconds / 3600);
             const m = Math.floor((swSeconds % 3600) / 60);
             const s = swSeconds % 60;
-            document.getElementById('stopwatch').innerText = 
-                `${pad(h)}:${pad(m)}:${pad(s)}`;
+            document.getElementById('stopwatch').innerText = `${pad(h)}:${pad(m)}:${pad(s)}`;
         }
 
         function logAndReset() {
             if (swSeconds === 0) return;
-            
-            // Pause
             if (swRunning) toggleStopwatch();
 
-            // Save Data
             const taskName = document.getElementById('big-task-name').innerText;
             const timeStr = document.getElementById('stopwatch').innerText;
             const logEntry = { task: taskName, time: timeStr, timestamp: new Date().toLocaleTimeString() };
             
             saveLog(logEntry);
 
-            // Reset
             swSeconds = 0;
             updateStopwatchDisplay();
-            document.getElementById('sw-btn').innerText = "START";
+            document.getElementById('sw-btn').innerText = "START WATCH";
         }
 
-        // --- LOGGING SYSTEM (LocalStorage) ---
+        // --- UTILS ---
         function saveLog(entry) {
             const logs = JSON.parse(localStorage.getItem('neet_logs') || '[]');
-            logs.unshift(entry); // Add to top
+            logs.unshift(entry);
             localStorage.setItem('neet_logs', JSON.stringify(logs));
             renderLogs(logs);
         }
@@ -368,32 +435,12 @@
             `).join('');
         }
 
-        // --- UTILS ---
         function timeToSec(str) {
             const [h, m] = str.split(':').map(Number);
             return h * 3600 + m * 60;
         }
-
         function pad(num) { return num.toString().padStart(2, '0'); }
 
-        // Audio Alarm
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playAlarm() {
-            // Double beep
-            beep(0, 800, 0.1);
-            setTimeout(() => beep(0, 800, 0.1), 200);
-        }
-        function beep(d, f, dur) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.frequency.value = f;
-            osc.start(audioCtx.currentTime + d);
-            osc.stop(audioCtx.currentTime + d + dur);
-        }
-
-        init();
     </script>
 </body>
 </html>
