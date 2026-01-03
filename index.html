@@ -3,484 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEET DISCIPLINE DASHBOARD</title>
+    <title>NEET PRO DASHBOARD</title>
     <style>
         :root {
             --bg-color: #050505;
             --text-color: #e0e0e0;
-            --accent-color: #ffffff;
-            --highlight-bg: #1f1f1f;
+            --accent-color: #4caf50; /* Green for Stopwatch */
+            --alert-color: #f44336;
+            --highlight-bg: #1a1a1a;
             --border-color: #333;
             --dim-text: #666;
-            --success-color: #4caf50;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Courier New', Courier, monospace; /* Monospace for disciplined feel */
+            font-family: 'Courier New', Courier, monospace;
             height: 100vh;
             display: grid;
             grid-template-rows: auto 1fr;
             overflow: hidden;
         }
 
-        /* HEADER */
+        /* HEADER: System Time + Auto-Countdown */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px 30px;
-            border-bottom: 1px solid var(--border-color);
             background-color: #000;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        #clock {
+        .system-time { font-size: 1.5rem; font-weight: bold; color: #fff; }
+        
+        .slot-timer-container {
+            text-align: right;
+        }
+        
+        .slot-label { font-size: 0.8rem; color: var(--dim-text); text-transform: uppercase; }
+        
+        #slot-countdown {
             font-size: 2rem;
+            color: var(--alert-color); /* Red to indicate urgency/deadline */
             font-weight: bold;
-            color: var(--accent-color);
-        }
-
-        .header-controls {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        #progress-display {
-            font-size: 1rem;
-            color: var(--dim-text);
-        }
-
-        button.fs-btn {
-            background: none;
-            border: 1px solid var(--dim-text);
-            color: var(--dim-text);
-            padding: 5px 15px;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all 0.2s;
-        }
-
-        button.fs-btn:hover {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
         }
 
         /* MAIN LAYOUT */
         main {
             display: grid;
-            grid-template-columns: 350px 1fr;
+            grid-template-columns: 300px 1fr;
             height: 100%;
             overflow: hidden;
         }
 
-        /* SIDEBAR (SCHEDULE) */
+        /* SIDEBAR: Schedule */
         aside {
             border-right: 1px solid var(--border-color);
             overflow-y: auto;
-            padding: 0;
+            background: #080808;
         }
 
         .schedule-item {
-            padding: 15px 20px;
+            padding: 12px 15px;
             border-bottom: 1px solid #111;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            transition: background 0.3s;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            color: var(--dim-text);
         }
 
         .schedule-item.active {
             background-color: var(--highlight-bg);
             border-left: 4px solid var(--accent-color);
-            color: var(--accent-color);
+            color: #fff;
         }
 
-        .schedule-item.break {
-            color: var(--dim-text);
-            font-style: italic;
-        }
+        .schedule-item.completed { text-decoration: line-through; opacity: 0.4; }
+        .time-col { font-weight: bold; margin-right: 10px; min-width: 80px; }
 
-        .schedule-item.completed {
-            text-decoration: line-through;
-            opacity: 0.5;
-        }
-
-        .time-col {
-            min-width: 100px;
-            font-weight: bold;
-        }
-
-        .task-col {
-            flex-grow: 1;
-            padding-left: 10px;
-        }
-
-        input[type="checkbox"] {
-            accent-color: var(--text-color);
-            transform: scale(1.2);
-            cursor: pointer;
-        }
-
-        /* FOCUS ZONE */
-        #focus-zone {
+        /* CENTER: Stopwatch & Logs */
+        #work-zone {
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
+            justify-content: start;
+            padding-top: 50px;
             position: relative;
         }
 
-        #current-task-label {
-            font-size: 1.5rem;
+        #current-task-display {
+            font-size: 1.2rem;
             color: var(--dim-text);
             margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
-        #current-task-name {
-            font-size: 3rem;
+        #big-task-name {
+            font-size: 2.5rem;
             font-weight: bold;
             margin-bottom: 40px;
-            max-width: 80%;
+            text-align: center;
         }
 
-        #timer {
-            font-size: 8rem;
+        /* STOPWATCH */
+        #stopwatch {
+            font-size: 7rem;
             font-weight: 300;
-            margin-bottom: 40px;
+            color: var(--accent-color);
             font-variant-numeric: tabular-nums;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(76, 175, 80, 0.2);
         }
 
-        .timer-controls button {
+        .controls { display: flex; gap: 15px; margin-bottom: 40px; }
+
+        button {
             background: transparent;
-            border: 2px solid var(--text-color);
+            border: 1px solid var(--text-color);
             color: var(--text-color);
-            font-size: 1.2rem;
-            padding: 15px 40px;
-            margin: 0 10px;
-            cursor: pointer;
+            padding: 15px 30px;
             font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
             text-transform: uppercase;
             transition: all 0.2s;
         }
 
-        .timer-controls button:hover {
-            background: var(--text-color);
-            color: var(--bg-color);
+        button:hover { background: var(--text-color); color: #000; }
+        
+        button.primary {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
         }
+        button.primary:hover { background: var(--accent-color); color: #000; }
+
+        /* LOGS TABLE */
+        #log-container {
+            width: 80%;
+            max-height: 250px;
+            overflow-y: auto;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .log-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #222;
+            font-size: 0.9rem;
+            color: var(--dim-text);
+        }
+        .log-entry span:last-child { color: var(--accent-color); }
 
         /* SCROLLBAR */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #000;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #333;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-
-        /* UTILITIES */
-        .blink {
-            animation: blinker 1s linear infinite;
-        }
-        @keyframes blinker {
-            50% { opacity: 0; }
-        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #333; }
     </style>
 </head>
 <body>
 
     <header>
-        <div id="clock">00:00:00</div>
-        <div class="header-controls">
-            <span id="progress-display">Tasks: 0/0</span>
-            <button class="fs-btn" onclick="toggleFullScreen()">[ ] Full Screen</button>
+        <div>
+            <div class="system-time" id="clock">00:00:00</div>
+            <div style="font-size: 0.8rem; color: #666;">SYSTEM TIME</div>
+        </div>
+        <div class="slot-timer-container">
+            <div class="slot-label">Slot Ends In</div>
+            <div id="slot-countdown">--:--</div>
         </div>
     </header>
 
     <main>
-        <aside id="schedule-list">
-            </aside>
+        <aside id="schedule-list"></aside>
 
-        <div id="focus-zone">
-            <div id="current-task-label">Current Task</div>
-            <div id="current-task-name">System Idle</div>
+        <div id="work-zone">
+            <div id="current-task-display">Current Focus</div>
+            <div id="big-task-name">Initializing...</div>
 
-            <div id="timer">00:00</div>
+            <div id="stopwatch">00:00:00</div>
 
-            <div class="timer-controls">
-                <button onclick="startTimer()">Start</button>
-                <button onclick="pauseTimer()">Pause</button>
-                <button onclick="resetTimer()">Reset</button>
+            <div class="controls">
+                <button onclick="toggleStopwatch()" id="sw-btn">START</button>
+                <button class="primary" onclick="logAndReset()">LOG & RESET</button>
             </div>
+
+            <div id="log-container">
+                </div>
         </div>
     </main>
 
     <script>
-        // --- CONFIGURATION & DATA ---
-
-        // Define the schedule exactly as requested
-        // Format: start (HH:MM), end (HH:MM), task, type (study/break)
-        const rawSchedule = [
-            // Morning - Biology
-            { s: "08:45", e: "09:30", t: "Bio Lecture 1", type: "study" },
-            { s: "09:30", e: "09:45", t: "Break", type: "break" },
-            { s: "09:45", e: "10:30", t: "Bio QP + Revision", type: "study" },
-            { s: "10:30", e: "10:45", t: "Break", type: "break" },
-            { s: "10:45", e: "11:30", t: "Bio Lecture 2", type: "study" },
-            { s: "11:30", e: "11:45", t: "Break", type: "break" },
-            { s: "11:45", e: "12:30", t: "Bio QP + Revision", type: "study" },
-            { s: "12:30", e: "12:45", t: "Break", type: "break" },
-            { s: "12:45", e: "13:30", t: "Bio Lecture 3", type: "study" },
-            { s: "13:30", e: "14:00", t: "Lunch + Walk", type: "break" },
-
-            // Core Zone (Locked)
-            { s: "14:00", e: "14:45", t: "🎯 Biology MCQs", type: "study" },
-            { s: "14:45", e: "15:00", t: "Break", type: "break" },
-            { s: "15:00", e: "15:45", t: "🎯 Chemistry MCQs", type: "study" },
-            { s: "15:45", e: "16:00", t: "Break", type: "break" },
-            { s: "16:00", e: "16:45", t: "🎯 Physics MCQs", type: "study" },
-            { s: "16:45", e: "17:00", t: "Break", type: "break" },
-
-            // Evening - Chemistry
-            { s: "17:00", e: "17:45", t: "Chem Lecture 1", type: "study" },
-            { s: "17:45", e: "18:00", t: "Break", type: "break" },
-            { s: "18:00", e: "18:45", t: "Chem QP + Revision", type: "study" },
-            { s: "18:45", e: "19:00", t: "Break", type: "break" },
-            { s: "19:00", e: "19:45", t: "Chem Lecture 2", type: "study" },
-            { s: "19:45", e: "20:00", t: "Dinner", type: "break" },
-
-            // Night - Physics
-            { s: "20:00", e: "20:45", t: "Physics Lecture 1", type: "study" },
-            { s: "20:45", e: "21:00", t: "Break", type: "break" },
-            { s: "21:00", e: "21:45", t: "Physics QP + Revision", type: "study" },
-            { s: "21:45", e: "22:00", t: "Break", type: "break" },
-            { s: "22:00", e: "22:45", t: "Physics Lecture 2", type: "study" },
-            { s: "22:45", e: "23:00", t: "Break", type: "break" },
-            { s: "23:00", e: "23:45", t: "Physics Notes / Formula", type: "study" },
-            { s: "23:45", e: "23:59", t: "Shutdown / Planning", type: "study" }
+        // --- DATA ---
+        const schedule = [
+            { s: "08:45", e: "09:30", t: "Bio Lecture 1" },
+            { s: "09:30", e: "09:45", t: "Break" },
+            { s: "09:45", e: "10:30", t: "Bio QP + Revision" },
+            { s: "10:30", e: "10:45", t: "Break" },
+            { s: "10:45", e: "11:30", t: "Bio Lecture 2" },
+            { s: "11:30", e: "11:45", t: "Break" },
+            { s: "11:45", e: "12:30", t: "Bio QP + Revision" },
+            { s: "12:30", e: "12:45", t: "Break" },
+            { s: "12:45", e: "13:30", t: "Bio Lecture 3" },
+            { s: "13:30", e: "14:00", t: "Lunch + Walk" },
+            { s: "14:00", e: "14:45", t: "🎯 Biology MCQs" },
+            { s: "14:45", e: "15:00", t: "Break" },
+            { s: "15:00", e: "15:45", t: "🎯 Chemistry MCQs" },
+            { s: "15:45", e: "16:00", t: "Break" },
+            { s: "16:00", e: "16:45", t: "🎯 Physics MCQs" },
+            { s: "16:45", e: "17:00", t: "Break" },
+            { s: "17:00", e: "17:45", t: "Chem Lecture 1" },
+            { s: "17:45", e: "18:00", t: "Break" },
+            { s: "18:00", e: "18:45", t: "Chem QP + Revision" },
+            { s: "18:45", e: "19:00", t: "Break" },
+            { s: "19:00", e: "19:45", t: "Chem Lecture 2" },
+            { s: "19:45", e: "20:00", t: "Dinner" },
+            { s: "20:00", e: "20:45", t: "Physics Lecture 1" },
+            { s: "20:45", e: "21:00", t: "Break" },
+            { s: "21:00", e: "21:45", t: "Physics QP + Revision" },
+            { s: "21:45", e: "22:00", t: "Break" },
+            { s: "22:00", e: "22:45", t: "Physics Lecture 2" },
+            { s: "22:45", e: "23:00", t: "Break" },
+            { s: "23:00", e: "23:45", t: "Notes / Error Fix" },
+            { s: "23:45", e: "23:59", t: "Shutdown / Plan" }
         ];
 
-        // --- STATE VARIABLES ---
-        let timerInterval = null;
-        let timeRemaining = 0; // in seconds
-        let isPaused = true;
-        let currentSlotIndex = -1;
+        // --- STATE ---
+        let currentSlot = null;
+        let swInterval = null;
+        let swSeconds = 0;
+        let swRunning = false;
 
-        // --- INITIALIZATION ---
+        // --- INIT ---
         function init() {
             renderSchedule();
-            updateClock();
-            setInterval(updateClock, 1000);
-            checkScheduleAlignment(); // Check which slot we are in
-            setInterval(checkScheduleAlignment, 30000); // Check alignment every 30s
-            updateProgress();
+            updateSystem();
+            setInterval(updateSystem, 1000); // Main Heartbeat
+            loadLogs();
         }
 
-        // --- CORE FUNCTIONS ---
-
+        // --- SCHEDULE LOGIC ---
         function renderSchedule() {
             const list = document.getElementById('schedule-list');
-            list.innerHTML = '';
-
-            rawSchedule.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = `schedule-item ${item.type}`;
-                div.id = `slot-${index}`;
-                div.innerHTML = `
-                    <div class="time-col">${item.s}</div>
-                    <div class="task-col">${item.t}</div>
-                    <input type="checkbox" onchange="updateProgress(this)">
-                `;
-                list.appendChild(div);
-            });
+            list.innerHTML = schedule.map((item, i) => `
+                <div class="schedule-item" id="slot-${i}">
+                    <span class="time-col">${item.s}</span>
+                    <span>${item.t}</span>
+                </div>
+            `).join('');
         }
 
-        function updateClock() {
+        function updateSystem() {
             const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', { hour12: false });
-            document.getElementById('clock').innerText = timeString;
-        }
+            const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+            
+            // 1. Update Clock
+            document.getElementById('clock').innerText = now.toLocaleTimeString('en-GB');
 
-        function getMinutesFromMidnight(timeStr) {
-            const [h, m] = timeStr.split(':').map(Number);
-            return h * 60 + m;
-        }
+            // 2. Find Active Slot & Update Countdown
+            let activeIndex = -1;
+            
+            schedule.forEach((item, i) => {
+                const startSec = timeToSec(item.s);
+                const endSec = timeToSec(item.e);
+                const el = document.getElementById(`slot-${i}`);
 
-        function checkScheduleAlignment() {
-            const now = new Date();
-            const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-            let activeFound = false;
-
-            rawSchedule.forEach((item, index) => {
-                const startMins = getMinutesFromMidnight(item.s);
-                const endMins = getMinutesFromMidnight(item.e);
-                const el = document.getElementById(`slot-${index}`);
-
-                // Reset styles
-                el.classList.remove('active');
-
-                // Check overlap
-                if (currentMinutes >= startMins && currentMinutes < endMins) {
-                    activeFound = true;
+                if (nowSec >= startSec && nowSec < endSec) {
+                    activeIndex = i;
                     el.classList.add('active');
-
-                    // If we switched to a new slot automatically
-                    if (currentSlotIndex !== index) {
-                        currentSlotIndex = index;
-                        loadSlot(item, startMins, endMins, currentMinutes);
-                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Update Slot Info
+                    if(currentSlot !== i) {
+                        currentSlot = i;
+                        document.getElementById('big-task-name').innerText = item.t;
+                        el.scrollIntoView({behavior: "smooth", block: "center"});
+                        playAlarm(); // Alarm on slot change
                     }
+
+                    // Auto Countdown (Top Right)
+                    const diff = endSec - nowSec;
+                    const m = Math.floor(diff / 60);
+                    const s = diff % 60;
+                    document.getElementById('slot-countdown').innerText = 
+                        `${pad(m)}:${pad(s)}`;
+                        
+                } else {
+                    el.classList.remove('active');
                 }
             });
 
-            if (!activeFound) {
-                // Outside schedule hours (Sleep time)
-                document.getElementById('current-task-name').innerText = "REST / SLEEP ZONE";
-                document.getElementById('current-task-label').innerText = "RECOVER";
+            if (activeIndex === -1) {
+                document.getElementById('slot-countdown').innerText = "SLEEP";
+                document.getElementById('big-task-name').innerText = "Rest / Sleep Zone";
             }
         }
 
-        function loadSlot(item, startMins, endMins, currentMinutes) {
-            document.getElementById('current-task-name').innerText = item.t;
-            document.getElementById('current-task-label').innerText = item.type === 'break' ? "RECHARGE" : "FOCUS MODE";
-
-            // Auto-set timer to remaining duration of the slot
-            // Calculate remaining seconds
-            const now = new Date();
-            const secondsPastMinute = now.getSeconds();
-            const totalSlotMinutes = endMins - currentMinutes;
-
-            // Set timer
-            timeRemaining = (totalSlotMinutes * 60) - secondsPastMinute;
-            if (timeRemaining < 0) timeRemaining = 0;
-
-            updateTimerDisplay();
-
-            // Auto-start timer if desired, or leave paused for manual trigger
-            // Prompt says: "Current block should be highlighted automatically".
-            // To be distraction-free, let's reset pause state so user hits start to commit.
-            pauseTimer();
-        }
-
-        // --- TIMER LOGIC ---
-
-        function updateTimerDisplay() {
-            const m = Math.floor(timeRemaining / 60);
-            const s = timeRemaining % 60;
-            document.getElementById('timer').innerText =
-                `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }
-
-        function startTimer() {
-            if (!isPaused) return;
-            isPaused = false;
-            document.getElementById('timer').style.color = "#fff";
-
-            timerInterval = setInterval(() => {
-                if (timeRemaining > 0) {
-                    timeRemaining--;
-                    updateTimerDisplay();
-                } else {
-                    playAlarm();
-                    pauseTimer();
-                    document.getElementById('timer').innerText = "00:00";
-                    document.getElementById('timer').classList.add('blink');
-                }
-            }, 1000);
-        }
-
-        function pauseTimer() {
-            isPaused = true;
-            clearInterval(timerInterval);
-            document.getElementById('timer').style.color = "var(--dim-text)";
-            document.getElementById('timer').classList.remove('blink');
-        }
-
-        function resetTimer() {
-            pauseTimer();
-            // Re-calculate based on current slot total duration (45 or 15)
-            if(currentSlotIndex !== -1) {
-                const item = rawSchedule[currentSlotIndex];
-                const start = getMinutesFromMidnight(item.s);
-                const end = getMinutesFromMidnight(item.e);
-                timeRemaining = (end - start) * 60;
-                updateTimerDisplay();
+        // --- STOPWATCH LOGIC ---
+        function toggleStopwatch() {
+            if (swRunning) {
+                clearInterval(swInterval);
+                document.getElementById('sw-btn').innerText = "RESUME";
+                document.getElementById('stopwatch').style.color = "#666";
+            } else {
+                swInterval = setInterval(() => {
+                    swSeconds++;
+                    updateStopwatchDisplay();
+                }, 1000);
+                document.getElementById('sw-btn').innerText = "PAUSE";
+                document.getElementById('stopwatch').style.color = "var(--accent-color)";
             }
+            swRunning = !swRunning;
         }
 
-        // --- ALARM SYSTEM (Web Audio API - No files needed) ---
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playAlarm() {
-            // Simple triple beep
-            beep(0, 880, 0.2);
-            setTimeout(() => beep(0, 880, 0.2), 300);
-            setTimeout(() => beep(0, 880, 0.4), 600);
+        function updateStopwatchDisplay() {
+            const h = Math.floor(swSeconds / 3600);
+            const m = Math.floor((swSeconds % 3600) / 60);
+            const s = swSeconds % 60;
+            document.getElementById('stopwatch').innerText = 
+                `${pad(h)}:${pad(m)}:${pad(s)}`;
         }
 
-        function beep(delay, frequency, duration) {
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
+        function logAndReset() {
+            if (swSeconds === 0) return;
+            
+            // Pause
+            if (swRunning) toggleStopwatch();
 
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
+            // Save Data
+            const taskName = document.getElementById('big-task-name').innerText;
+            const timeStr = document.getElementById('stopwatch').innerText;
+            const logEntry = { task: taskName, time: timeStr, timestamp: new Date().toLocaleTimeString() };
+            
+            saveLog(logEntry);
 
-            oscillator.type = "sine";
-            oscillator.frequency.value = frequency;
+            // Reset
+            swSeconds = 0;
+            updateStopwatchDisplay();
+            document.getElementById('sw-btn').innerText = "START";
+        }
 
-            const now = audioCtx.currentTime;
-            oscillator.start(now + delay);
-            oscillator.stop(now + delay + duration);
+        // --- LOGGING SYSTEM (LocalStorage) ---
+        function saveLog(entry) {
+            const logs = JSON.parse(localStorage.getItem('neet_logs') || '[]');
+            logs.unshift(entry); // Add to top
+            localStorage.setItem('neet_logs', JSON.stringify(logs));
+            renderLogs(logs);
+        }
+
+        function loadLogs() {
+            const logs = JSON.parse(localStorage.getItem('neet_logs') || '[]');
+            renderLogs(logs);
+        }
+
+        function renderLogs(logs) {
+            const container = document.getElementById('log-container');
+            container.innerHTML = logs.map(log => `
+                <div class="log-entry">
+                    <span>${log.timestamp} - ${log.task}</span>
+                    <span>${log.time}</span>
+                </div>
+            `).join('');
         }
 
         // --- UTILS ---
-
-        function updateProgress() {
-            const total = rawSchedule.length;
-            const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
-            document.getElementById('progress-display').innerText = `Completed: ${checked} / ${total}`;
-
-            // Visual feedback for checkbox parent
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(box => {
-                if(box.checked) {
-                    box.parentElement.classList.add('completed');
-                } else {
-                    box.parentElement.classList.remove('completed');
-                }
-            });
+        function timeToSec(str) {
+            const [h, m] = str.split(':').map(Number);
+            return h * 3600 + m * 60;
         }
 
-        function toggleFullScreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
+        function pad(num) { return num.toString().padStart(2, '0'); }
+
+        // Audio Alarm
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playAlarm() {
+            // Double beep
+            beep(0, 800, 0.1);
+            setTimeout(() => beep(0, 800, 0.1), 200);
+        }
+        function beep(d, f, dur) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = f;
+            osc.start(audioCtx.currentTime + d);
+            osc.stop(audioCtx.currentTime + d + dur);
         }
 
-        // Start system
         init();
-
     </script>
 </body>
 </html>
